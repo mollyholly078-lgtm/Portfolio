@@ -20,6 +20,11 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+img, iframe, video {
+  max-width: 100%;
 }
 
 /* Header & Navigation */
@@ -197,36 +202,8 @@ nav {
 .hero-social-links {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-top: 2rem;
-}
-
-.hero-social-icon {
-  color: var(--text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0.5rem;
-  text-decoration: none;
-}
-
-.hero-social-icon svg {
-  width: 28px;
-  height: 28px;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  transition: transform 0.3s ease;
-}
-
-.hero-social-icon:hover {
-  color: var(--accent-color);
-  transform: translateY(-3px);
-}
-
-.hero-social-icon:hover svg {
-  transform: scale(1.15);
-  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
 }
 
 .hero-social-icon {
@@ -235,17 +212,17 @@ nav {
   justify-content: center;
   width: 45px;
   height: 45px;
-  margin: 0 8px;
   border-radius: 50%;
   background: #111;
   color: #fff;
   font-size: 18px;
+  text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .hero-social-icon:hover {
   transform: translateY(-3px);
-  background: #ff4d5a;
+  background: var(--accent-alt);
   color: #fff;
 }
 
@@ -810,11 +787,6 @@ footer p {
     margin: 0 6px;
   }
 
-  .hero-social-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
   .hero-social-links {
     gap: 1rem;
   }
@@ -832,12 +804,8 @@ footer p {
     height: 200px;
   }
 
-  .about-content,
   .resume-container {
     grid-template-columns: 1fr;
-  }
-
-  .resume-container {
     gap: 1.5rem;
   }
 
@@ -967,6 +935,77 @@ footer p {
   .form-group input,
   .form-group textarea {
     padding: 0.7rem;
+  }
+}
+
+/* Responsive - Very Small Phone (< 380px) */
+@media (max-width: 380px) {
+  nav {
+    padding: 0.8rem 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .nav-links {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero p {
+    font-size: 0.85rem;
+  }
+
+  .hero-content {
+    padding: 0 1rem;
+  }
+
+  .hero-social-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 0 0.8rem;
+  }
+
+  section h2 {
+    font-size: 1.3rem;
+  }
+
+  .portfolio-content h3 {
+    font-size: 1rem;
+  }
+
+  .portfolio-content p {
+    font-size: 0.85rem;
+  }
+
+  .contact-link {
+    width: 80px;
+    padding: 0.5rem;
+  }
+
+  .contact-link span {
+    font-size: 0.75rem;
+  }
+
+  .contact-form {
+    padding: 1rem;
+  }
+
+  .resume-section {
+    padding: 1rem;
+  }
+
+  .resume-item h4 {
+    font-size: 1rem;
   }
 }
 

@@ -144,9 +144,12 @@ nav {
 }
 
 @keyframes gradientShift {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -224,6 +227,26 @@ nav {
 .hero-social-icon:hover svg {
   transform: scale(1.15);
   filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+}
+
+.hero-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  margin: 0 8px;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.hero-social-icon:hover {
+  transform: translateY(-3px);
+  background: #ff4d5a;
+  color: #fff;
 }
 
 /* Main Container */
@@ -704,6 +727,7 @@ footer p {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

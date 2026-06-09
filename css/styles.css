@@ -399,20 +399,6 @@ section h2::after {
   min-width: 300px;
 }
 
-.video-player {
-  width: 100%;
-  margin-top: 1rem;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #000;
-}
-
-.video-player video {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
 /* About Section */
 .about-content {
   max-width: 800px;
@@ -677,24 +663,134 @@ footer p {
   color: var(--text-muted);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background: var(--text-color);
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Video Wrapper for Responsive iframes */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #000;
+  margin-top: 1rem;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Responsive - Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
   .hero h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
+  }
+
+  .portfolio-video-item {
+    flex-basis: calc(50% - 1rem);
+    min-width: 280px;
+  }
+
+  section {
+    padding: 4rem 0;
+  }
+
+  section h2 {
+    font-size: 2.2rem;
+  }
+
+  .resume-container {
+    gap: 2rem;
+  }
+}
+
+/* Responsive - Mobile (< 768px) */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: 100vh;
+    background: var(--secondary-color);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    font-size: 1.1rem;
+    transition: right 0.3s ease;
+    z-index: 1000;
+    border-left: 2px solid var(--accent-color);
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links a {
+    font-size: 1.2rem;
+  }
+
+  .hero {
+    min-height: 90vh;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
   }
 
   .hero p {
     font-size: 1rem;
   }
 
-  .nav-links {
-    gap: 1rem;
-    font-size: 0.9rem;
-  }
-
-  .about-content,
-  .resume-container {
-    grid-template-columns: 1fr;
+  .hero::before,
+  .hero::after {
+    width: 250px;
+    height: 250px;
   }
 
   .cta-buttons {
@@ -704,20 +800,173 @@ footer p {
 
   .btn {
     width: 100%;
-    max-width: 300px;
+    max-width: 280px;
   }
 
-  section h2 {
-    font-size: 2rem;
+  .hero-social-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    margin: 0 6px;
   }
 
-  .contact-links {
+  .hero-social-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .hero-social-links {
     gap: 1rem;
   }
 
+  .portfolio-grid {
+    gap: 1.5rem;
+  }
+
+  .portfolio-video-item {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  .portfolio-image {
+    height: 200px;
+  }
+
+  .about-content,
+  .resume-container {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-container {
+    gap: 1.5rem;
+  }
+
+  section {
+    padding: 3rem 0;
+  }
+
+  section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-links {
+    gap: 0.8rem;
+  }
+
   .contact-link {
-    width: 120px;
+    width: 110px;
+    padding: 0.8rem;
+  }
+
+  .contact-link i {
+    font-size: 1.5rem;
+  }
+
+  .contact-form {
+    padding: 1.5rem;
+  }
+
+  footer {
+    padding: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  footer p {
+    font-size: 0.85rem;
+  }
+}
+
+/* Responsive - Small Phone (< 480px) */
+@media (max-width: 480px) {
+  nav {
+    padding: 1rem 1.2rem;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+  }
+
+  .nav-links {
+    width: 85%;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  .hero-content {
+    padding: 0 1.2rem;
+  }
+
+  .hero-social-links {
+    gap: 0.8rem;
+  }
+
+  .hero-social-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 1.2rem;
+  }
+
+  section {
+    padding: 2.5rem 0;
+  }
+
+  section h2 {
+    font-size: 1.5rem;
+  }
+
+  .portfolio-image {
+    height: 180px;
+    font-size: 2rem;
+  }
+
+  .portfolio-content {
     padding: 1rem;
+  }
+
+  .portfolio-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .skills {
+    gap: 0.6rem;
+  }
+
+  .skill-tag {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .resume-section {
+    padding: 1.2rem;
+  }
+
+  .contact-link {
+    width: 90px;
+    padding: 0.6rem;
+  }
+
+  .contact-link span {
+    font-size: 0.8rem;
+  }
+
+  .contact-form {
+    padding: 1.2rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.7rem;
   }
 }
 

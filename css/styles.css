@@ -702,7 +702,8 @@ footer p {
   margin-top: 1rem;
 }
 
-.video-wrapper iframe {
+.video-wrapper iframe,
+.video-wrapper video {
   position: absolute;
   top: 0;
   left: 0;

@@ -164,34 +164,27 @@ navLinks.querySelectorAll('a').forEach(link => {
   });
 });
 
-// Iframe fallback - open in Google Drive if embed fails to load
-document.querySelectorAll('.video-wrapper iframe').forEach(iframe => {
-  const driveId = iframe.src.match(/\/file\/d\/([^/]+)/)?.[1];
-  if (!driveId) return;
+// Video error fallback - direct Google Drive link
+document.querySelectorAll('.video-wrapper video').forEach(video => {
+  video.addEventListener('error', function() {
+    const wrapper = this.closest('.video-wrapper');
+    if (!wrapper || wrapper.querySelector('.video-fallback')) return;
 
-  // On mobile, add a tap-to-open overlay since Drive embeds often require sign-in
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    const wrapper = iframe.closest('.video-wrapper');
-    if (!wrapper) return;
+    const source = this.querySelector('source');
+    const match = source ? source.src.match(/id=([^&]+)/) : null;
+    if (!match) return;
 
-    const overlay = document.createElement('a');
-    overlay.href = `https://drive.google.com/file/d/${driveId}/view`;
-    overlay.target = '_blank';
-    overlay.rel = 'noopener';
-    overlay.style.cssText = `
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.3); z-index: 2; cursor: pointer; text-decoration: none;
-    `;
-    overlay.innerHTML = `
-      <span style="display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem;
-                   background: rgba(0,0,0,0.7); color: #fff; border-radius: 8px; font-size: 1rem;
-                   border: 1px solid rgba(255,255,255,0.2);">
+    const fallback = document.createElement('div');
+    fallback.className = 'video-fallback';
+    fallback.innerHTML = `
+      <p>Play in Google Drive</p>
+      <a href="https://drive.google.com/file/d/${match[1]}/view" target="_blank" rel="noopener">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
-        Play in Google Drive
-      </span>
+        Open Video
+      </a>
     `;
-    wrapper.appendChild(overlay);
-  }
+    wrapper.appendChild(fallback);
+  });
 });

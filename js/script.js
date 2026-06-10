@@ -163,3 +163,38 @@ navLinks.querySelectorAll('a').forEach(link => {
     toggleMenu(true);
   });
 });
+
+// Video error handling - fallback for Google Drive videos
+document.querySelectorAll('.video-wrapper video').forEach(video => {
+  video.addEventListener('error', function() {
+    const wrapper = this.closest('.video-wrapper');
+    if (!wrapper) return;
+
+    // Build fallback with Google Drive preview link
+    const source = this.querySelector('source');
+    const driveId = source ? source.src.match(/id=([^&]+)/)?.[1] : null;
+    const driveLink = driveId ? `https://drive.google.com/file/d/${driveId}/preview` : null;
+
+    const fallback = document.createElement('div');
+    fallback.style.cssText = `
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #000; gap: 1rem; padding: 1rem;
+      text-align: center; color: #b0b0b0; font-size: 0.9rem;
+    `;
+
+    if (driveLink) {
+      fallback.innerHTML = `
+        <p>Video could not be played directly.</p>
+        <a href="${driveLink}" target="_blank" rel="noopener"
+           style="display: inline-block; padding: 0.6rem 1.5rem; background: #00d4ff;
+                  color: #000; text-decoration: none; border-radius: 5px; font-weight: 600;">
+          Open in Google Drive
+        </a>
+      `;
+    } else {
+      fallback.textContent = 'Video could not be loaded.';
+    }
+
+    wrapper.appendChild(fallback);
+  });
+});

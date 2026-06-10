@@ -21,6 +21,15 @@ body {
   line-height: 1.6;
   scroll-behavior: smooth;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, input, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  touch-action: manipulation;
 }
 
 img, iframe, video {
@@ -299,7 +308,7 @@ section h2::after {
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .portfolio-item {
@@ -507,7 +516,7 @@ section h2::after {
 .contact-links {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 3rem;
 }
@@ -516,7 +525,7 @@ section h2::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1rem;
   background: var(--secondary-color);
   border-radius: 8px;
   border: 2px solid var(--border-color);
@@ -524,6 +533,9 @@ section h2::after {
   color: var(--text-color);
   transition: all 0.3s ease;
   width: 150px;
+  flex: 1;
+  min-width: 120px;
+  max-width: 180px;
 }
 
 .contact-link:hover {
@@ -641,6 +653,10 @@ footer p {
 }
 
 /* Hamburger Menu */
+.nav-overlay {
+  display: none;
+}
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -706,6 +722,10 @@ footer p {
     min-width: 280px;
   }
 
+  .portfolio-grid {
+    justify-content: center;
+  }
+
   section {
     padding: 4rem 0;
   }
@@ -725,18 +745,34 @@ footer p {
     display: flex;
   }
 
+  .nav-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
   .nav-links {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 70%;
-    max-width: 300px;
+    width: 75%;
+    max-width: 320px;
     height: 100vh;
     background: var(--secondary-color);
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     font-size: 1.1rem;
     transition: right 0.3s ease;
     z-index: 1000;
@@ -750,6 +786,7 @@ footer p {
 
   .nav-links a {
     font-size: 1.2rem;
+    padding: 0.5rem 1rem;
   }
 
   .hero {
@@ -800,6 +837,23 @@ footer p {
     min-width: 0;
   }
 
+  .video-wrapper {
+    aspect-ratio: 4 / 3;
+    min-height: 240px;
+  }
+
+  .portfolio-item:hover {
+    transform: none;
+  }
+
+  .portfolio-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .portfolio-content p {
+    font-size: 0.9rem;
+  }
+
   .portfolio-image {
     height: 200px;
   }
@@ -823,8 +877,8 @@ footer p {
   }
 
   .contact-link {
-    width: 110px;
-    padding: 0.8rem;
+    width: 100px;
+    padding: 0.8rem 0.5rem;
   }
 
   .contact-link i {
@@ -842,6 +896,34 @@ footer p {
 
   footer p {
     font-size: 0.85rem;
+  }
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  .portfolio-item:hover {
+    transform: none;
+    border-color: var(--border-color);
+    box-shadow: none;
+  }
+
+  .btn-primary:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary:hover {
+    transform: none;
+  }
+
+  .hero-social-icon:hover {
+    transform: none;
+    background: #111;
+  }
+
+  .contact-link:hover {
+    border-color: var(--border-color);
+    background: var(--secondary-color);
   }
 }
 
@@ -921,11 +1003,16 @@ footer p {
 
   .contact-link {
     width: 90px;
+    min-width: 80px;
     padding: 0.6rem;
   }
 
   .contact-link span {
     font-size: 0.8rem;
+  }
+
+  .contact-links {
+    gap: 0.6rem;
   }
 
   .contact-form {
@@ -988,12 +1075,17 @@ footer p {
   }
 
   .contact-link {
-    width: 80px;
+    width: 75px;
+    min-width: 70px;
     padding: 0.5rem;
   }
 
   .contact-link span {
     font-size: 0.75rem;
+  }
+
+  .contact-links {
+    gap: 0.4rem;
   }
 
   .contact-form {

@@ -134,29 +134,32 @@ document.querySelectorAll('.portfolio-item, .resume-section, .skill-tag').forEac
 // Mobile menu toggle
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.querySelector('.nav-links');
+const navOverlay = document.getElementById('navOverlay');
+
+function toggleMenu(forceClose = false) {
+  const isActive = forceClose ? false : !navLinks.classList.contains('active');
+  hamburger.classList.toggle('active', isActive);
+  navLinks.classList.toggle('active', isActive);
+  navOverlay.classList.toggle('active', isActive);
+  document.body.style.overflow = isActive ? 'hidden' : '';
+}
 
 if (hamburger) {
   hamburger.addEventListener('click', function() {
-    this.classList.toggle('active');
-    navLinks.classList.toggle('active');
-    document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    toggleMenu();
+  });
+}
+
+// Close mobile menu on overlay click
+if (navOverlay) {
+  navOverlay.addEventListener('click', function() {
+    toggleMenu(true);
   });
 }
 
 // Close mobile menu on link click
 navLinks.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navLinks.classList.remove('active');
-    document.body.style.overflow = '';
+    toggleMenu(true);
   });
-});
-
-// Close mobile menu on outside click
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('nav') && navLinks.classList.contains('active')) {
-    hamburger.classList.remove('active');
-    navLinks.classList.remove('active');
-    document.body.style.overflow = '';
-  }
 });

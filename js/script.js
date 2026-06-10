@@ -164,37 +164,34 @@ navLinks.querySelectorAll('a').forEach(link => {
   });
 });
 
-// Video error handling - fallback for Google Drive videos
-document.querySelectorAll('.video-wrapper video').forEach(video => {
-  video.addEventListener('error', function() {
-    const wrapper = this.closest('.video-wrapper');
+// Iframe fallback - open in Google Drive if embed fails to load
+document.querySelectorAll('.video-wrapper iframe').forEach(iframe => {
+  const driveId = iframe.src.match(/\/file\/d\/([^/]+)/)?.[1];
+  if (!driveId) return;
+
+  // On mobile, add a tap-to-open overlay since Drive embeds often require sign-in
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    const wrapper = iframe.closest('.video-wrapper');
     if (!wrapper) return;
 
-    // Build fallback with Google Drive preview link
-    const source = this.querySelector('source');
-    const driveId = source ? source.src.match(/id=([^&]+)/)?.[1] : null;
-    const driveLink = driveId ? `https://drive.google.com/file/d/${driveId}/preview` : null;
-
-    const fallback = document.createElement('div');
-    fallback.style.cssText = `
-      position: absolute; inset: 0; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; background: #000; gap: 1rem; padding: 1rem;
-      text-align: center; color: #b0b0b0; font-size: 0.9rem;
+    const overlay = document.createElement('a');
+    overlay.href = `https://drive.google.com/file/d/${driveId}/view`;
+    overlay.target = '_blank';
+    overlay.rel = 'noopener';
+    overlay.style.cssText = `
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.3); z-index: 2; cursor: pointer; text-decoration: none;
     `;
-
-    if (driveLink) {
-      fallback.innerHTML = `
-        <p>Video could not be played directly.</p>
-        <a href="${driveLink}" target="_blank" rel="noopener"
-           style="display: inline-block; padding: 0.6rem 1.5rem; background: #00d4ff;
-                  color: #000; text-decoration: none; border-radius: 5px; font-weight: 600;">
-          Open in Google Drive
-        </a>
-      `;
-    } else {
-      fallback.textContent = 'Video could not be loaded.';
-    }
-
-    wrapper.appendChild(fallback);
-  });
+    overlay.innerHTML = `
+      <span style="display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem;
+                   background: rgba(0,0,0,0.7); color: #fff; border-radius: 8px; font-size: 1rem;
+                   border: 1px solid rgba(255,255,255,0.2);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Play in Google Drive
+      </span>
+    `;
+    wrapper.appendChild(overlay);
+  }
 });

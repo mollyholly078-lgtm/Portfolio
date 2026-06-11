@@ -74,13 +74,9 @@ export default function GuesserView({
             ))}
           </div>
         ) : (
-          <>
-            <div className="shimmer-card h-6 w-3/4 mx-auto mb-2" />
-            <div className="shimmer-card h-6 w-1/2 mx-auto" />
-            <p className="text-center text-sm mt-3 italic" style={{ color: 'var(--color-text-muted)' }}>
-              Waiting for describer's clues...
-            </p>
-          </>
+          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Describer is picking a word...
+          </p>
         )}
       </div>
 

@@ -152,33 +152,8 @@ export default function GameBoard({
         </div>
       </div>
 
-      <div className="flex justify-between items-center px-4 pt-2">
-        <button onClick={onLeave}
-          className="text-xs font-medium transition-colors px-3 py-1.5 rounded-lg"
-          style={{
-            color: 'var(--color-wrong)',
-            border: '1px solid rgba(224, 92, 92, 0.3)',
-            background: 'transparent',
-            minHeight: '36px',
-          }}>
-          Exit Game
-        </button>
-        {isHost && (
-          <button onClick={onEndGame}
-            className="text-xs transition-colors px-2.5 py-1 rounded-lg"
-            style={{
-              color: 'var(--color-text-muted)',
-              border: '1px solid var(--color-border)',
-              background: 'transparent',
-              minHeight: '36px',
-            }}>
-            End Game
-          </button>
-        )}
-      </div>
-
-      <div className="flex-1 flex flex-col lg:flex-row gap-2 p-2 max-w-7xl mx-auto w-full" style={{ animation: 'fade-in 0.4s ease-out' }}>
-        <div className="flex-1 flex flex-col gap-2 min-w-0">
+      <div className="flex-1 flex flex-col lg:flex-row gap-2 p-2 max-w-7xl mx-auto w-full overflow-hidden" style={{ animation: 'fade-in 0.4s ease-out' }}>
+        <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-hidden">
           <Scoreboard
             players={players} describerId={describerId}
             currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
@@ -209,14 +184,6 @@ export default function GameBoard({
                 onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
                 onSkipWords={async () => {}} onGiveUp={onGiveUp}
               />
-            )}
-
-            {room.state === 'choosing' && !isDescriber && (
-              <div className="flex items-center justify-center p-6" style={{ animation: 'fade-in 0.4s ease-out' }}>
-                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  {room.currentCategory ? `Describer is choosing a word...` : 'Describer is choosing...'}
-                </p>
-              </div>
             )}
 
             {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
@@ -256,6 +223,31 @@ export default function GameBoard({
             />
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-between items-center px-4 pb-3 pt-1" style={{ borderTop: '1px solid var(--color-border)' }}>
+        <button onClick={onLeave}
+          className="text-xs font-medium transition-colors px-3 py-1.5 rounded-lg"
+          style={{
+            color: 'var(--color-wrong)',
+            border: '1px solid rgba(224, 92, 92, 0.3)',
+            background: 'transparent',
+            minHeight: '36px',
+          }}>
+          Exit Game
+        </button>
+        {isHost && (
+          <button onClick={onEndGame}
+            className="text-xs transition-colors px-2.5 py-1 rounded-lg"
+            style={{
+              color: 'var(--color-text-muted)',
+              border: '1px solid var(--color-border)',
+              background: 'transparent',
+              minHeight: '36px',
+            }}>
+            End Game
+          </button>
+        )}
       </div>
     </div>
   )

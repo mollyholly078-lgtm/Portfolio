@@ -18,6 +18,16 @@ interface Props {
   guesses: Record<string, GuessEntry>
 }
 
+function ShowWordButton({ word }: { word: string }) {
+  const [show, setShow] = useState(false)
+  return (
+    <button onClick={() => setShow(!show)}
+      className="mt-1 text-[10px] text-text-muted hover:text-primary transition-colors px-2 py-0.5 rounded border border-border hover:border-primary/40">
+      {show ? word : '👁 peek word'}
+    </button>
+  )
+}
+
 export default function DescriberView({
   word,
   wordOptions,
@@ -91,6 +101,7 @@ export default function DescriberView({
       <div className="text-center mb-2">
         <p className="text-xs text-text-muted uppercase tracking-wider">{CATEGORY_EMOJIS[category as Category] || ''} {category}</p>
         <LetterBlanks word={word} />
+        <ShowWordButton word={word} />
       </div>
 
       <div className="bg-surface rounded-xl p-2.5 mb-2 max-h-28 overflow-y-auto scrollbar-thin">

@@ -196,18 +196,18 @@ export default function GameBoard({
             {room.state === 'choosing' && isDescriber && (
               <DescriberView
                 word="" wordOptions={room.wordOptions || []} category={room.currentCategory}
-                descriptions="" state="choosing"
+                state="choosing"
                 onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={onSkipWords} onSubmitDescription={async () => {}} onGiveUp={async () => {}} guesses={{}}
+                onSkipWords={onSkipWords} onGiveUp={async () => {}}
               />
             )}
 
             {room.state === 'describing' && isDescriber && (
               <DescriberView
                 word={room.currentWord} wordOptions={room.wordOptions || []} category={room.currentCategory}
-                descriptions={room.descriptions || ''} state="describing"
+                state="describing"
                 onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={async () => {}} onSubmitDescription={onSubmitDescription} onGiveUp={onGiveUp} guesses={guesses}
+                onSkipWords={async () => {}} onGiveUp={onGiveUp}
               />
             )}
 

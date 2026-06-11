@@ -2,20 +2,16 @@ import { useState, useEffect } from 'react'
 import { CATEGORY_EMOJIS } from '../types'
 import type { Category } from '../types'
 import LetterBlanks from './LetterBlanks'
-import type { GuessEntry } from '../types'
 
 interface Props {
   word: string
   wordOptions: string[]
   category: string
-  descriptions: string
   state: 'choosing' | 'describing'
   onChooseWord: (word: string) => Promise<void>
   onSetCustomWord: (word: string) => Promise<void>
   onSkipWords: () => Promise<void>
-  onSubmitDescription: (text: string) => Promise<void>
   onGiveUp: () => Promise<void>
-  guesses: Record<string, GuessEntry>
 }
 
 function ShowWordButton({ word }: { word: string }) {
@@ -37,17 +33,13 @@ export default function DescriberView({
   word,
   wordOptions,
   category,
-  descriptions,
   state,
   onChooseWord,
   onSetCustomWord,
   onSkipWords,
   onGiveUp,
-  guesses,
 }: Props) {
   const [customWord, setCustomWord] = useState('')
-
-  const guessesList = Object.values(guesses)
 
   useEffect(() => {
     setCustomWord('')
@@ -152,32 +144,6 @@ export default function DescriberView({
         <ShowWordButton word={word} />
       </div>
 
-      {/* Clues Card */}
-      <div
-        className="p-4 mb-3"
-        style={{
-          background: 'var(--color-surface)',
-          borderRadius: 'var(--radius-card)',
-          boxShadow: 'var(--shadow-card)',
-          border: '1px solid var(--color-border)',
-          maxHeight: '150px',
-          overflowY: 'auto',
-        }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-muted)' }}>
-          Your clues
-        </p>
-        {descriptions ? (
-          <div className="space-y-1">
-            {descriptions.split('\n').filter(Boolean).map((line, i) => (
-              <p key={i} className="text-sm" style={{ color: 'var(--color-text)' }}>{line}</p>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>Type clues in the Activity feed...</p>
-        )}
-      </div>
-
       <button onClick={onGiveUp}
         className="text-xs transition-colors self-center px-4 py-2 rounded-lg"
         style={{
@@ -190,27 +156,6 @@ export default function DescriberView({
         Give Up — Reveal Answer
       </button>
 
-      {guessesList.length > 0 && (
-        <div
-          className="p-3 mt-3 overflow-y-auto scrollbar-thin"
-          style={{
-            background: 'var(--color-surface-alt)',
-            borderRadius: 'var(--radius-card)',
-            maxHeight: '120px',
-          }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
-            Guesses
-          </p>
-          <div className="space-y-0.5">
-            {guessesList.sort((a, b) => a.timestamp - b.timestamp).map((g) => (
-              <p key={g.id} className="text-sm" style={g.correct ? { color: 'var(--color-correct)', fontWeight: 700 } : {}}>
-                {g.playerName}: {g.word}
-              </p>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

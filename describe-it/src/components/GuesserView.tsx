@@ -7,7 +7,6 @@ import type { GuessEntry } from '../types'
 interface Props {
   category: string
   currentWord: string
-  descriptions: string
   state: 'choosing' | 'describing' | 'revealing'
   onSubmitGuess: (word: string) => Promise<void>
   guesses: Record<string, GuessEntry>
@@ -16,7 +15,6 @@ interface Props {
 export default function GuesserView({
   category,
   currentWord,
-  descriptions,
   state,
   guesses,
 }: Props) {
@@ -49,36 +47,21 @@ export default function GuesserView({
         <LetterBlanks word={currentWord} />
       </div>
 
-      {/* Question Card */}
-      <div
-        className="p-6 mb-3"
-        style={{
-          background: 'var(--color-surface)',
-          borderRadius: 'var(--radius-card)',
-          boxShadow: 'var(--shadow-card)',
-          border: '1px solid var(--color-border)',
-          animation: 'slide-in-right 0.25s ease-out',
-        }}
-      >
-        {descriptions ? (
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-muted)' }}>Clues</p>
-            {descriptions.split('\n').filter(Boolean).map((line, i) => (
-              <p
-                key={i}
-                className="text-center"
-                style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text)' }}
-              >
-                {line}
-              </p>
-            ))}
-          </div>
-        ) : (
+      {state === 'choosing' && (
+        <div
+          className="p-6 mb-3"
+          style={{
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-card)',
+            boxShadow: 'var(--shadow-card)',
+            border: '1px solid var(--color-border)',
+          }}
+        >
           <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Describer is picking a word...
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Guesses List */}
       {guessesList.length > 0 && (

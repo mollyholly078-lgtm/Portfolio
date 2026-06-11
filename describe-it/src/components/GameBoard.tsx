@@ -189,7 +189,7 @@ export default function GameBoard({
             {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
               <GuesserView
                 category={room.currentCategory} currentWord={room.currentWord}
-                descriptions={room.descriptions || ''} state={room.state}
+                state={room.state}
                 onSubmitGuess={onSubmitGuess} guesses={guesses}
               />
             )}

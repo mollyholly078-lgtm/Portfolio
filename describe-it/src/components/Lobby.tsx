@@ -13,11 +13,17 @@ interface Props {
 
 export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: Props) {
   const [rounds, setRounds] = useState<string>('3')
-  const [selectedCats, setSelectedCats] = useState<string[]>(CATEGORIES)
+  const [selectedCats, setSelectedCats] = useState<string[]>([])
 
   const toggleCat = (cat: string) => {
     setSelectedCats(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    )
+  }
+
+  const toggleAll = () => {
+    setSelectedCats(prev =>
+      prev.length === CATEGORIES.length ? [] : [...CATEGORIES]
     )
   }
 
@@ -120,6 +126,17 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
               <div>
                 <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>Categories</p>
                 <div className="flex flex-wrap gap-1.5">
+                  <button key="all" onClick={toggleAll}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      background: selectedCats.length === CATEGORIES.length ? 'rgba(91, 79, 207, 0.15)' : 'var(--color-surface-alt)',
+                      color: selectedCats.length === CATEGORIES.length ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                      border: selectedCats.length === CATEGORIES.length ? '1px solid rgba(91, 79, 207, 0.3)' : '1px solid transparent',
+                      cursor: 'pointer',
+                      minHeight: '36px',
+                    }}>
+                    {selectedCats.length === CATEGORIES.length ? '✓ ' : ''}All
+                  </button>
                   {CATEGORIES.map((cat) => {
                     const active = selectedCats.includes(cat)
                     return (

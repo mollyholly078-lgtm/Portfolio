@@ -22,25 +22,62 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-3">
-      <div className="w-full max-w-md animate-fade-in">
+    <div className="min-h-[100dvh] flex items-center justify-center p-3" style={{ background: 'var(--color-bg)' }}>
+      <div className="w-full max-w-md" style={{ animation: 'fade-in 0.4s ease-out' }}>
         <div className="text-center mb-5">
-          <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Catkey</h1>
-          <p className="text-text-muted text-xs">Room Code</p>
-          <div className="text-2xl font-mono font-bold tracking-[0.3em] text-primary mt-0.5">{roomCode}</div>
+          <h1
+            className="mb-1"
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '1.75rem',
+              fontWeight: 800,
+              color: 'var(--color-primary)',
+            }}
+          >
+            🐱 Catkey
+          </h1>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Room Code</p>
+          <div
+            className="text-2xl font-mono font-bold mt-1"
+            style={{ color: 'var(--color-primary)', letterSpacing: '0.3em' }}
+          >
+            {roomCode}
+          </div>
         </div>
 
-        <div className="bg-surface rounded-xl p-3 mb-3">
-          <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Players ({players.length}/4)</h3>
-          <div className="space-y-1.5">
+        <div
+          className="p-4 mb-3"
+          style={{
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-card)',
+            boxShadow: 'var(--shadow-card)',
+          }}
+        >
+          <h3 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--color-text-muted)' }}>
+            Players ({players.length}/4)
+          </h3>
+          <div className="space-y-2">
             {players.map((player) => (
-              <div key={player.id} className="flex items-center gap-2 p-2 rounded-lg bg-surface-light/50">
+              <div key={player.id} className="flex items-center gap-3 p-2 rounded-lg" style={{ background: 'var(--color-surface-alt)' }}>
                 <PlayerAvatar name={player.name} color={player.color} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium truncate">{player.name}</span>
-                  {player.isHost && <span className="text-[10px] bg-accent/20 text-accent px-1.5 py-0.5 rounded font-semibold ml-1">HOST</span>}
+                  <span className="text-sm font-medium truncate" style={{ color: 'var(--color-text)' }}>{player.name}</span>
+                  {player.isHost && (
+                    <span
+                      className="text-[10px] font-semibold ml-1.5 px-1.5 py-0.5 rounded"
+                      style={{
+                        background: 'rgba(245, 166, 35, 0.2)',
+                        color: 'var(--color-accent)',
+                      }}
+                    >
+                      HOST
+                    </span>
+                  )}
                 </div>
-                <div className={`w-2 h-2 rounded-full shrink-0 ${player.connected ? 'bg-success' : 'bg-danger'}`} />
+                <div
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ background: player.connected ? 'var(--color-correct)' : 'var(--color-wrong)' }}
+                />
               </div>
             ))}
           </div>
@@ -48,24 +85,53 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
 
         {isHost && players.length >= 2 && (
           <div className="space-y-3">
-            <div className="bg-surface rounded-xl p-3">
-              <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Game Settings</h3>
+            <div
+              className="p-4"
+              style={{
+                background: 'var(--color-surface)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
+              }}
+            >
+              <h3 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--color-text-muted)' }}>
+                Game Settings
+              </h3>
 
               <div className="mb-3">
-                <p className="text-xs text-text-muted mb-1">Rounds</p>
+                <p className="text-xs mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Rounds</p>
                 <input type="number" min="1" max="50" value={rounds}
                   onChange={(e) => setRounds(e.target.value)}
-                  className="w-full bg-surface-light border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+                  className="w-full"
+                  style={{
+                    background: 'var(--color-surface-alt)',
+                    border: '2px solid var(--color-border)',
+                    borderRadius: '12px',
+                    padding: '12px 16px',
+                    fontSize: '0.9rem',
+                    fontFamily: "'Nunito', sans-serif",
+                    outline: 'none',
+                    color: 'var(--color-text)',
+                  }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(91, 79, 207, 0.15)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.boxShadow = 'none'; }}
+                />
               </div>
 
               <div>
-                <p className="text-xs text-text-muted mb-1.5">Categories</p>
-                <div className="flex flex-wrap gap-1">
+                <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>Categories</p>
+                <div className="flex flex-wrap gap-1.5">
                   {CATEGORIES.map((cat) => {
                     const active = selectedCats.includes(cat)
                     return (
                       <button key={cat} onClick={() => toggleCat(cat)}
-                        className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${active ? 'bg-primary/20 text-primary ring-1 ring-primary/40' : 'bg-surface-light text-text-muted hover:text-text'}`}>
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all"
+                        style={{
+                          background: active ? 'rgba(91, 79, 207, 0.15)' : 'var(--color-surface-alt)',
+                          color: active ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                          border: active ? '1px solid rgba(91, 79, 207, 0.3)' : '1px solid transparent',
+                          cursor: 'pointer',
+                          minHeight: '36px',
+                        }}>
                         {CATEGORY_EMOJIS[cat]} {cat}
                       </button>
                     )
@@ -76,16 +142,37 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
 
             <button onClick={() => onStart(parseInt(rounds) || 3, selectedCats)}
               disabled={selectedCats.length === 0}
-              className="w-full py-3 bg-success hover:bg-emerald-600 disabled:opacity-50 rounded-lg font-semibold text-base transition-colors">
+              className="w-full font-bold transition-all"
+              style={{
+                background: 'var(--color-correct)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 'var(--radius-btn)',
+                padding: '16px 32px',
+                fontSize: '1rem',
+                opacity: selectedCats.length === 0 ? 0.5 : 1,
+                cursor: selectedCats.length === 0 ? 'not-allowed' : 'pointer',
+                minHeight: '52px',
+              }}>
               Start Game
             </button>
           </div>
         )}
 
-        {!isHost && <p className="text-center text-text-muted text-xs py-3">Waiting for host to configure and start the game...</p>}
-        {players.length < 2 && isHost && <p className="text-center text-text-muted text-xs mt-3">Need at least 2 players to start</p>}
+        {!isHost && <p className="text-center text-xs py-3" style={{ color: 'var(--color-text-muted)' }}>Waiting for host to configure and start the game...</p>}
+        {players.length < 2 && isHost && <p className="text-center text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>Need at least 2 players to start</p>}
 
-        <button onClick={onLeave} className="w-full mt-3 py-2 text-text-muted hover:text-danger transition-colors text-xs">Leave Room</button>
+        <button onClick={onLeave}
+          className="w-full mt-3 py-2 text-xs transition-colors"
+          style={{
+            color: 'var(--color-text-muted)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            minHeight: '44px',
+          }}>
+          Leave Room
+        </button>
       </div>
     </div>
   )

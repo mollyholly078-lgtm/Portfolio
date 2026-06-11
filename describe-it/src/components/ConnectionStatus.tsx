@@ -25,7 +25,13 @@ export default function ConnectionStatus({ players }: Props) {
 
   if (!connected) {
     return (
-      <div className="fixed top-0 left-0 right-0 bg-danger text-white text-center py-2 text-sm font-semibold z-50 animate-slide-up">
+      <div
+        className="fixed top-0 left-0 right-0 text-white text-center py-2 text-sm font-semibold z-50"
+        style={{
+          background: 'var(--color-wrong)',
+          animation: 'slide-down-banner 0.3s ease-out',
+        }}
+      >
         Reconnecting...
       </div>
     )
@@ -33,12 +39,19 @@ export default function ConnectionStatus({ players }: Props) {
 
   return (
     <div className="fixed top-2 right-2 z-50">
-      <div className="flex items-center gap-2 bg-surface/80 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs">
-        <div className="w-2 h-2 rounded-full bg-success" />
-        <span className="text-text-muted">
+      <div
+        className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
+        style={{
+          background: 'var(--color-surface)',
+          boxShadow: 'var(--shadow-sm)',
+          border: '1px solid var(--color-border)',
+        }}
+      >
+        <div className="w-2 h-2 rounded-full" style={{ background: 'var(--color-correct)' }} />
+        <span style={{ color: 'var(--color-text-muted)' }}>
           {onlineCount}/{players.length}
         </span>
-        <span className="text-text-muted">online</span>
+        <span style={{ color: 'var(--color-text-muted)' }}>online</span>
       </div>
     </div>
   )

@@ -8,7 +8,31 @@ import GameBoard from './components/GameBoard'
 import FinalResults from './components/FinalResults'
 import type { Room } from './types'
 
+function useDarkMode() {
+  const [dark, setDark] = useState(() => {
+    try {
+      const saved = localStorage.getItem('catkey_dark_mode')
+      if (saved !== null) return saved === 'true'
+    } catch {
+      // localStorage not available
+    }
+    return false
+  })
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', dark)
+    try { localStorage.setItem('catkey_dark_mode', String(dark)) } catch {
+      // localStorage not available
+    }
+  }, [dark])
+
+  const toggle = useCallback(() => setDark(prev => !prev), [])
+
+  return { dark, toggle }
+}
+
 export default function App() {
+  const { dark, toggle: toggleDark } = useDarkMode()
   const game = useGame()
   const [roomData, setRoomData] = useState<Room | null>(null)
   const [screen, setScreen] = useState<'home' | 'lobby' | 'game' | 'results'>('home')
@@ -84,11 +108,21 @@ export default function App() {
   }
 
   if (screen === 'lobby' && game.roomCode) {
-    return <Lobby players={game.players} roomCode={game.roomCode} isHost={game.isHost} onStart={handleStart} onLeave={handleLeave} />
+    return (
+      <>
+        <DarkToggle dark={dark} onToggle={toggleDark} />
+        <Lobby players={game.players} roomCode={game.roomCode} isHost={game.isHost} onStart={handleStart} onLeave={handleLeave} />
+      </>
+    )
   }
 
   if (screen === 'results' && roomData) {
-    return <FinalResults players={game.players} wordHistory={roomData.wordHistory || {}} onPlayAgain={game.playAgain} isHost={game.isHost} />
+    return (
+      <>
+        <DarkToggle dark={dark} onToggle={toggleDark} />
+        <FinalResults players={game.players} wordHistory={roomData.wordHistory || {}} onPlayAgain={game.playAgain} isHost={game.isHost} />
+      </>
+    )
   }
 
   if (screen === 'game' && game.roomCode && game.playerId && roomData) {
@@ -98,6 +132,7 @@ export default function App() {
         onChooseWord={game.chooseWord} onSetCustomWord={game.setCustomWord} onSkipWords={game.skipWords}
         onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
         onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame} onGiveUp={game.giveUpTurn} onLeave={handleExitGame}
+        dark={dark} onToggleDark={toggleDark}
       />
     )
   }
@@ -109,5 +144,34 @@ export default function App() {
         <p className="text-text-muted">Loading...</p>
       </div>
     </div>
+  )
+}
+
+function DarkToggle({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-label="Toggle dark mode"
+      className="fixed top-3 right-3 z-50 flex items-center justify-center transition-colors rounded-full"
+      style={{
+        width: '36px',
+        height: '36px',
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        cursor: 'pointer',
+        minHeight: '36px',
+        color: 'var(--color-text)',
+      }}
+    >
+      {dark ? (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      ) : (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      )}
+    </button>
   )
 }

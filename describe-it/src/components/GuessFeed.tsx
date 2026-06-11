@@ -15,19 +15,23 @@ export default function GuessFeed({ guesses }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="text-xs font-semibold text-text-muted uppercase tracking-wider px-3 py-2 border-b border-border">
+      <div className="text-xs font-bold uppercase tracking-wider px-3 py-2" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
         Guess Feed
       </div>
       <div className="flex-1 overflow-y-auto scrollbar-thin p-3 space-y-1.5">
         {entries.length === 0 && (
-          <p className="text-text-muted text-sm text-center py-4">Waiting for guesses...</p>
+          <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-muted)' }}>Waiting for guesses...</p>
         )}
         {entries.map((entry) => (
           <div
             key={entry.id}
-            className={`animate-fade-in text-sm p-1.5 rounded ${
-              entry.correct ? 'bg-success/20 text-success font-bold' : ''
-            }`}
+            className="text-sm p-1.5 rounded"
+            style={{
+              animation: 'fade-in 0.3s ease-out',
+              background: entry.correct ? 'rgba(76, 175, 125, 0.15)' : 'transparent',
+              color: entry.correct ? 'var(--color-correct)' : 'var(--color-text)',
+              fontWeight: entry.correct ? 700 : 400,
+            }}
           >
             <span className="text-xs font-semibold mr-1">{entry.playerName}:</span>
             <span>{entry.word}</span>

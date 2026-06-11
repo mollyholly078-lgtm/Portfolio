@@ -83,8 +83,8 @@ export default function DescriberView({
 
         <div className="flex flex-col gap-2 items-center">
           <button onClick={onSkipWords}
-            className="text-xs transition-colors px-4 py-2 rounded-lg"
-            style={{ color: 'var(--color-text-muted)', minHeight: '44px', cursor: 'pointer', background: 'transparent', border: '1px solid var(--color-border)' }}>
+            className="text-xs transition-colors px-3 py-1.5 rounded-lg"
+            style={{ color: 'var(--color-text-muted)', minHeight: '36px', cursor: 'pointer', background: 'transparent', border: '1px solid var(--color-border)' }}>
             Skip — get 3 new words
           </button>
           <form onSubmit={(e) => { e.preventDefault(); if (customWord.trim()) onSetCustomWord(customWord.trim()) }} className="flex gap-1.5 w-full" style={{ maxWidth: '360px' }}>
@@ -151,7 +151,7 @@ export default function DescriberView({
           border: '1px solid var(--color-border)',
           background: 'transparent',
           cursor: 'pointer',
-          minHeight: '44px',
+          minHeight: '36px',
         }}>
         Give Up — Reveal Answer
       </button>

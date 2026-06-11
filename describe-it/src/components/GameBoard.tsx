@@ -45,7 +45,6 @@ export default function GameBoard({
   const [showConfetti, setShowConfetti] = useState(false)
   const [successBanner, setSuccessBanner] = useState<string | null>(null)
   const [showScoreboard, setShowScoreboard] = useState(false)
-  const [showWord, setShowWord] = useState(false)
   const prevCorrectGuesses = useRef<Set<string>>(new Set())
 
   const guesses = room.guesses || {}
@@ -94,7 +93,7 @@ export default function GameBoard({
       <div
         className="sticky top-0 z-40 flex items-center justify-between px-3"
         style={{
-          height: '52px',
+          height: '48px',
           background: 'var(--color-surface)',
           borderBottom: '1px solid var(--color-border)',
         }}
@@ -102,41 +101,66 @@ export default function GameBoard({
         <button
           onClick={onLeave}
           className="flex items-center justify-center"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '6px', borderRadius: '8px' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '4px', borderRadius: '8px' }}
           aria-label="Back"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
         </button>
 
-        <div className="flex items-center gap-2 flex-1 ml-2">
-          <span className="font-bold" style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.05rem', color: 'var(--color-primary)' }}>
+        <div className="flex items-center gap-1.5 flex-1 ml-2 min-w-0">
+          <span className="font-bold truncate" style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '0.95rem', color: 'var(--color-primary)' }}>
             Catkey
           </span>
-          {room.settings.totalRounds > 0 && (
-            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: 'var(--color-surface-alt)', color: 'var(--color-text-muted)' }}>
-              {room.currentRound}/{room.settings.totalRounds}
+          {room.state !== 'revealing' && room.state !== 'finished' && room.currentWord && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0" style={{
+              background: isDescriber ? 'rgba(91, 79, 207, 0.1)' : 'rgba(245, 166, 35, 0.1)',
+              color: isDescriber ? 'var(--color-primary)' : 'var(--color-accent)',
+            }}>
+              {isDescriber ? 'Describing' : 'Guessing'}
+            </span>
+          )}
+          {room.state === 'choosing' && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0" style={{
+              background: 'rgba(91, 79, 207, 0.08)',
+              color: 'var(--color-text-muted)',
+            }}>
+              Choosing...
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-0.5">
+          {room.state === 'describing' && isDescriber && (
+            <button
+              onClick={onGiveUp}
+              className="text-[10px] font-medium px-2 py-1 rounded shrink-0"
+              style={{
+                color: 'var(--color-text-muted)',
+                border: '1px solid var(--color-border)',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
+            >
+              Give Up
+            </button>
+          )}
           <ConnectionStatus players={players} />
           {onToggleDark && (
             <button
               onClick={onToggleDark}
               aria-label="Toggle dark mode"
               className="flex items-center justify-center"
-              style={{ width: '36px', height: '36px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
+              style={{ width: '32px', height: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
             >
               {dark ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
                 </svg>
               ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
@@ -145,88 +169,15 @@ export default function GameBoard({
           <button
             onClick={() => setShowScoreboard(true)}
             className="flex items-center justify-center"
-            style={{ width: '36px', height: '36px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
+            style={{ width: '32px', height: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
             aria-label="Scoreboard"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
         </div>
       </div>
-
-      {/* Game Status Bar */}
-      {room.state !== 'revealing' && room.state !== 'finished' && (
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto"
-          style={{
-            background: 'var(--color-surface)',
-            borderBottom: '1px solid var(--color-border)',
-            minHeight: '40px',
-          }}
-        >
-          {room.state === 'choosing' ? (
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              {isDescriber ? 'Pick a word to describe' : 'Describer is picking a word...'}
-            </p>
-          ) : (
-            <>
-              <span className="text-xs font-medium shrink-0" style={{ color: 'var(--color-text-muted)' }}>
-                {room.currentCategory}
-              </span>
-              <div className="flex gap-0.5 shrink-0">
-                {room.currentWord.split('').map((char, i) => {
-                  const isRevealed = showWord || (!/[a-zA-Z0-9]/.test(char))
-                  return (
-                    <span
-                      key={i}
-                      className="flex items-center justify-center"
-                      style={{
-                        width: '1.3rem',
-                        height: '1.5rem',
-                        borderBottom: /[a-zA-Z0-9]/.test(char) ? '2px solid var(--color-text-muted)' : 'none',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        color: isRevealed ? 'var(--color-text)' : 'var(--color-text-muted)',
-                      }}
-                    >
-                      {isRevealed ? char : ''}
-                    </span>
-                  )
-                })}
-              </div>
-              {isDescriber && (
-                <button
-                  onClick={() => setShowWord(!showWord)}
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
-                  style={{
-                    background: showWord ? 'rgba(91, 79, 207, 0.15)' : 'rgba(91, 79, 207, 0.08)',
-                    color: 'var(--color-primary)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {showWord ? 'Hide' : '👁'}
-                </button>
-              )}
-              <div className="flex-1" />
-              <button
-                onClick={onGiveUp}
-                className="text-[10px] font-medium px-2 py-0.5 rounded shrink-0"
-                style={{
-                  color: 'var(--color-text-muted)',
-                  border: '1px solid var(--color-border)',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                }}
-              >
-                Give Up
-              </button>
-            </>
-          )}
-        </div>
-      )}
 
       {/* Reveal Timer Bar */}
       {room.state === 'revealing' && (
@@ -288,24 +239,27 @@ export default function GameBoard({
         <>
           <div className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.35)' }} onClick={() => setShowScoreboard(false)} />
           <div
-            className="fixed top-0 right-0 h-full z-50 w-72 shadow-xl overflow-y-auto"
+            className="fixed top-0 right-0 h-full z-50 shadow-xl overflow-y-auto"
             style={{
+              width: '220px',
               background: 'var(--color-surface)',
-              animation: 'slide-in-right 0.25s ease-out',
+              animation: 'slide-in-right 0.2s ease-out',
             }}
           >
-            <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <h2 className="text-sm font-bold" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>Scoreboard</h2>
+            <div className="flex items-center justify-between px-3 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                Players
+              </span>
               <button
                 onClick={() => setShowScoreboard(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px', lineHeight: 0 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
-            <div className="p-3">
+            <div className="px-3 py-2">
               <Scoreboard
                 players={players}
                 describerId={describerId}

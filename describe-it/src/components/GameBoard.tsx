@@ -68,17 +68,15 @@ export default function GameBoard({
 
       <ConnectionStatus players={players} />
 
-      <div className="flex justify-end px-3 pt-1.5 gap-2">
+      <div className="flex justify-between items-center px-3 pt-1.5">
+        <button onClick={onLeave}
+          className="text-xs font-medium text-danger hover:text-red-400 transition-colors px-3 py-1.5 rounded-lg border border-danger/30 hover:border-danger/60">
+          Exit Game
+        </button>
         {isHost && (
           <button onClick={onEndGame}
             className="text-xs text-text-muted hover:text-danger transition-colors px-2.5 py-1 rounded-lg border border-border hover:border-danger/50">
             End Game
-          </button>
-        )}
-        {!isHost && (
-          <button onClick={onLeave}
-            className="text-xs text-text-muted hover:text-danger transition-colors px-2.5 py-1 rounded-lg border border-border hover:border-danger/50">
-            Exit Game
           </button>
         )}
       </div>

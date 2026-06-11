@@ -14,7 +14,26 @@ export async function generateWords(category: Category): Promise<string[]> {
     return getFallbackWords(category, 3)
   }
 
-  const prompt = `Give me 3 unique, well-known ${category} names suitable for a word guessing party game. Difficulty: medium. Return ONLY a valid JSON array of 3 strings. No explanation, no markdown, no extra text.`
+  const categoryHints: Record<string, string> = {
+    'Countries': 'countries (e.g. Japan, Brazil, Egypt, Australia, France, Italy, Mexico, Thailand, Spain, Canada)',
+    'Food & Drinks': 'food or drink items (e.g. Pizza, Sushi, Tacos, Pasta, Burger, Ice Cream, Chocolate, Pancakes)',
+    'Celebrities': 'famous celebrity names (e.g. Taylor Swift, Leonardo DiCaprio, Beyonce, Dwayne Johnson, Tom Cruise)',
+    'Objects / Household Items': 'household objects (e.g. Toothbrush, Microwave, Umbrella, Pillow, Candle, Backpack, Mirror)',
+    'Animals': 'animals (e.g. Elephant, Penguin, Dolphin, Kangaroo, Octopus, Flamingo, Giraffe, Butterfly)',
+    'Sports': 'sports (e.g. Basketball, Soccer, Tennis, Baseball, Swimming, Boxing, Cycling, Surfing)',
+    'Music & Songs': 'songs or music artists (e.g. Bohemian Rhapsody, Billie Jean, Imagine, Shape of You, Thriller)',
+    'Video Games': 'video game names (e.g. Minecraft, Fortnite, Super Mario, The Legend of Zelda, Among Us, Call of Duty)',
+    'Nature & Places': 'natural landmarks or places (e.g. Grand Canyon, Amazon River, Mount Everest, Niagara Falls, Sahara Desert)',
+  }
+  const hint = categoryHints[category] || `${category} items`
+  const prompt = `You are generating words for a party word-guessing game called Catkey.
+Category: "${category}"
+
+Generate 3 unique, well-known ${hint}. Difficulty: medium.
+The words should be things that players know and can describe to others.
+
+Return ONLY a valid JSON array of 3 strings (e.g. ["Word1", "Word2", "Word3"]).
+No explanation, no markdown, no extra text.`
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {

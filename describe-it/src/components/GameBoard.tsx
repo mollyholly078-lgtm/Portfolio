@@ -42,42 +42,27 @@ export default function GameBoard({
   onToggleDark,
 }: Props) {
   const [showConfetti, setShowConfetti] = useState(false)
-  const [scoreBounce, setScoreBounce] = useState(false)
   const [successBanner, setSuccessBanner] = useState<string | null>(null)
   const prevCorrectGuesses = useRef<Set<string>>(new Set())
-  const prevScore = useRef(0)
 
   const guesses = room.guesses || {}
   const guessesList = Object.values(guesses)
   const players = Object.values(room.players)
   const describerId = room.playerOrder[room.currentDescriberIndex]
-  const totalScore = players.reduce((sum, p) => sum + (p.score || 0), 0)
 
   useEffect(() => {
     const currentCorrectIds = new Set(guessesList.filter(g => g.correct).map(g => g.id))
     if (currentCorrectIds.size > prevCorrectGuesses.current.size) {
       setShowConfetti(true)
-      setScoreBounce(true)
       const correctGuess = guessesList.find(g => g.correct && !prevCorrectGuesses.current.has(g.id))
       if (correctGuess) {
         setSuccessBanner(`${correctGuess.playerName} got it right!`)
         setTimeout(() => setSuccessBanner(null), 2000)
       }
-      setTimeout(() => {
-        setShowConfetti(false)
-        setScoreBounce(false)
-      }, 3000)
+      setTimeout(() => setShowConfetti(false), 3000)
     }
     prevCorrectGuesses.current = currentCorrectIds
   }, [guesses])
-
-  useEffect(() => {
-    if (totalScore > prevScore.current) {
-      setScoreBounce(true)
-      setTimeout(() => setScoreBounce(false), 300)
-    }
-    prevScore.current = totalScore
-  }, [totalScore])
 
   const historyKey = `round${room.currentRound}`
   const currentHistory = room.wordHistory?.[historyKey] || null
@@ -89,8 +74,6 @@ export default function GameBoard({
           <Confetti particleCount={100} width={400} />
         </div>
       )}
-
-      <ConnectionStatus players={players} />
 
       {/* Success Banner */}
       {successBanner && (
@@ -165,23 +148,7 @@ export default function GameBoard({
               )}
             </button>
           )}
-          <div
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-sm ${scoreBounce ? 'animate-bounce-score' : ''}`}
-            style={{
-              background: 'var(--color-accent)',
-              color: '#fff',
-              minHeight: '32px',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 12 20 22 4 22 4 12"/>
-              <rect x="2" y="7" width="20" height="5"/>
-              <line x1="12" y1="22" x2="12" y2="7"/>
-              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-            </svg>
-            <span>{totalScore.toFixed(1)}</span>
-          </div>
+          <ConnectionStatus players={players} />
         </div>
       </div>
 

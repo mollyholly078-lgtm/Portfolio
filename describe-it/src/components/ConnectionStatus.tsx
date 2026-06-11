@@ -38,21 +38,17 @@ export default function ConnectionStatus({ players }: Props) {
   }
 
   return (
-    <div className="fixed top-2 z-50" style={{ left: '56px' }}>
-      <div
-        className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
-        style={{
-          background: 'var(--color-surface)',
-          boxShadow: 'var(--shadow-sm)',
-          border: '1px solid var(--color-border)',
-        }}
-      >
-        <div className="w-2 h-2 rounded-full" style={{ background: 'var(--color-correct)' }} />
-        <span style={{ color: 'var(--color-text-muted)' }}>
-          {onlineCount}/{players.length}
-        </span>
-        <span style={{ color: 'var(--color-text-muted)' }}>online</span>
-      </div>
+    <div
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1"
+      style={{
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+      }}
+    >
+      <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-correct)' }} />
+      <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+        {onlineCount}/{players.length}
+      </span>
     </div>
   )
 }

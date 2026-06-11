@@ -12,6 +12,8 @@ interface Props {
 }
 
 export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: Props) {
+  const [rounds, setRounds] = useState<string>('3')
+  const [timer, setTimer] = useState<string>('60')
   const [selectedCats, setSelectedCats] = useState<string[]>(CATEGORIES)
 
   const toggleCat = (cat: string) => {
@@ -50,6 +52,20 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
             <div className="bg-surface rounded-xl p-3">
               <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Game Settings</h3>
 
+              <div className="mb-3">
+                <p className="text-xs text-text-muted mb-1">Rounds</p>
+                <input type="number" min="1" max="50" value={rounds}
+                  onChange={(e) => setRounds(e.target.value)}
+                  className="w-full bg-surface-light border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+
+              <div className="mb-3">
+                <p className="text-xs text-text-muted mb-1">Timer (seconds)</p>
+                <input type="number" min="10" max="300" value={timer}
+                  onChange={(e) => setTimer(e.target.value)}
+                  className="w-full bg-surface-light border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+
               <div>
                 <p className="text-xs text-text-muted mb-1.5">Categories</p>
                 <div className="flex flex-wrap gap-1">
@@ -66,7 +82,7 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
               </div>
             </div>
 
-            <button onClick={() => onStart(3, 60, selectedCats)}
+            <button onClick={() => onStart(parseInt(rounds) || 3, parseInt(timer) || 60, selectedCats)}
               disabled={selectedCats.length === 0}
               className="w-full py-3 bg-success hover:bg-emerald-600 disabled:opacity-50 rounded-lg font-semibold text-base transition-colors">
               Start Game

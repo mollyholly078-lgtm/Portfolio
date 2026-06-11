@@ -9,7 +9,10 @@ import type {
 } from '../types'
 import { CATEGORIES, PLAYER_COLORS, REVEAL_DURATION } from '../types'
 import { generateWords } from '../utils/claude'
-import { isCorrectGuess } from '../utils/levenshtein'
+function guessContainsWord(guess: string, answer: string): boolean {
+  const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(guess)
+}
 
 interface GameOptions {
   totalRounds: number
@@ -368,14 +371,13 @@ export function useGame(): UseGameReturn {
   const submitGuess = useCallback(async (word: string) => {
     if (!roomCode || !uid || !room || !playerName) return
     const trimmed = word.trim()
-    const isSingleWord = /^[a-zA-Z0-9]+$/.test(trimmed)
     const guessEntry: GuessEntry = {
       id: `${Date.now()}_${uid}`,
       playerId: uid, playerName,
       word: trimmed, correct: false, timestamp: Date.now(),
     }
-    if (room.state === 'describing' && room.currentWord && isSingleWord) {
-      guessEntry.correct = isCorrectGuess(trimmed, room.currentWord)
+    if (room.state === 'describing' && room.currentWord) {
+      guessEntry.correct = guessContainsWord(trimmed, room.currentWord)
     }
     try {
       const guessRef = push(ref(db, `rooms/${roomCode}/guesses`))

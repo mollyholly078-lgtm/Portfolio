@@ -38,7 +38,7 @@ export default function ConnectionStatus({ players }: Props) {
   }
 
   return (
-    <div className="fixed top-2 right-2 z-50">
+    <div className="fixed top-2 z-50" style={{ left: '56px' }}>
       <div
         className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
         style={{

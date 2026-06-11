@@ -42,19 +42,14 @@ export default function DescriberView({
   onChooseWord,
   onSetCustomWord,
   onSkipWords,
-  onSubmitDescription,
   onGiveUp,
   guesses,
 }: Props) {
-  const [desc, setDesc] = useState('')
-  const [warning, setWarning] = useState(false)
   const [customWord, setCustomWord] = useState('')
 
   const guessesList = Object.values(guesses)
 
   useEffect(() => {
-    setDesc('')
-    setWarning(false)
     setCustomWord('')
   }, [state, word])
 
@@ -179,60 +174,12 @@ export default function DescriberView({
             ))}
           </div>
         ) : (
-          <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>Start typing your description...</p>
+          <p className="text-xs italic" style={{ color: 'var(--color-text-muted)' }}>Type clues in the Activity feed...</p>
         )}
       </div>
 
-      <form onSubmit={(e) => {
-        e.preventDefault()
-        if (!desc.trim()) return
-        if (desc.toLowerCase().includes(word.toLowerCase())) { setWarning(true); return }
-        setWarning(false)
-        onSubmitDescription(desc.trim())
-        setDesc('')
-      }} className="mb-3 flex flex-col items-center">
-        <div className="flex gap-2 w-full" style={{ maxWidth: '360px' }}>
-          <input type="text" value={desc} onChange={(e) => { setDesc(e.target.value); setWarning(false) }}
-            placeholder="Type a clue..."
-            className="flex-1 min-w-0"
-            style={{
-              background: 'var(--color-surface)',
-              border: '2px solid var(--color-border)',
-              borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '0.9rem',
-              fontFamily: "'Nunito', sans-serif",
-              outline: 'none',
-              color: 'var(--color-text)',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(91, 79, 207, 0.15)'; }}
-            onBlur={(e) => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.boxShadow = 'none'; }}
-            maxLength={200}
-          />
-          <button type="submit" disabled={!desc.trim()}
-            className="font-semibold text-sm transition-colors shrink-0 whitespace-nowrap"
-            style={{
-              background: 'var(--color-primary)',
-              opacity: !desc.trim() ? 0.5 : 1,
-              color: '#fff',
-              border: 'none',
-              borderRadius: 'var(--radius-btn)',
-              padding: '12px 20px',
-              cursor: !desc.trim() ? 'not-allowed' : 'pointer',
-              minHeight: '44px',
-            }}>
-            Send
-          </button>
-        </div>
-        {warning && (
-          <p className="text-sm mt-1.5 font-medium" style={{ color: 'var(--color-wrong)', animation: 'fade-in 0.2s ease-out' }}>
-            ⚠️ Your description contains the secret word!
-          </p>
-        )}
-      </form>
-
       <button onClick={onGiveUp}
-        className="text-xs transition-colors self-center mb-3 px-4 py-2 rounded-lg"
+        className="text-xs transition-colors self-center px-4 py-2 rounded-lg"
         style={{
           color: 'var(--color-text-muted)',
           border: '1px solid var(--color-border)',
@@ -245,7 +192,7 @@ export default function DescriberView({
 
       {guessesList.length > 0 && (
         <div
-          className="p-3 overflow-y-auto scrollbar-thin"
+          className="p-3 mt-3 overflow-y-auto scrollbar-thin"
           style={{
             background: 'var(--color-surface-alt)',
             borderRadius: 'var(--radius-card)',

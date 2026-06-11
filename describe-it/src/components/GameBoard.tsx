@@ -280,10 +280,13 @@ export default function GameBoard({
             <ActivityFeed
               guesses={guesses}
               chatMessages={room.chatMessages || {}}
+              descriptions={room.descriptions}
               onSubmitGuess={onSubmitGuess}
               onSendChatMessage={onSendChatMessage}
+              onSubmitDescription={onSubmitDescription}
               isDescriber={isDescriber}
               roomState={room.state}
+              currentWord={room.currentWord}
             />
           </div>
         </div>

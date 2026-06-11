@@ -4,14 +4,17 @@ import type { GuessEntry, ChatMessage } from '../types'
 interface Props {
   guesses: Record<string, GuessEntry>
   chatMessages: Record<string, ChatMessage>
+  descriptions?: string
   onSubmitGuess: (word: string) => Promise<void>
   onSendChatMessage: (message: string) => Promise<void>
+  onSubmitDescription?: (text: string) => Promise<void>
   isDescriber: boolean
   roomState: string
+  currentWord?: string
 }
 
 type ActivityEntry = {
-  type: 'guess' | 'chat'
+  type: 'guess' | 'chat' | 'clue'
   id: string
   playerId: string
   playerName: string
@@ -20,10 +23,17 @@ type ActivityEntry = {
   correct?: boolean
 }
 
+function containsExactWord(text: string, target: string): boolean {
+  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(text)
+}
+
 export default function ActivityFeed({
-  guesses, chatMessages, onSubmitGuess, onSendChatMessage, isDescriber, roomState,
+  guesses, chatMessages, descriptions, onSubmitGuess, onSendChatMessage,
+  onSubmitDescription, isDescriber, roomState, currentWord,
 }: Props) {
   const [input, setInput] = useState('')
+  const [warning, setWarning] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const guessEntries: ActivityEntry[] = Object.values(guesses).map((g) => ({
@@ -36,23 +46,41 @@ export default function ActivityFeed({
     timestamp: m.timestamp, text: m.message,
   }))
 
-  const entries = [...guessEntries, ...chatEntries].sort((a, b) => a.timestamp - b.timestamp)
+  const clueEntries: ActivityEntry[] = descriptions
+    ? descriptions.split('\n').filter(Boolean).map((line, i) => ({
+        type: 'clue' as const,
+        id: `clue-${i}`,
+        playerId: 'describer',
+        playerName: 'Clue',
+        timestamp: Date.now() + i,
+        text: line,
+      }))
+    : []
+
+  const entries = [...clueEntries, ...guessEntries, ...chatEntries].sort((a, b) => a.timestamp - b.timestamp)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [entries.length])
 
-  const isSingleWord = (text: string): boolean => /^[a-zA-Z0-9]+$/.test(text)
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const val = input.trim()
     if (!val) return
-    setInput('')
 
-    if (!isDescriber && roomState === 'describing' && isSingleWord(val)) {
+    if (isDescriber && roomState === 'describing' && currentWord) {
+      if (containsExactWord(val, currentWord)) {
+        setWarning(true)
+        return
+      }
+      setWarning(false)
+      setInput('')
+      onSubmitDescription?.(val)
+    } else if (!isDescriber && roomState === 'describing' && currentWord && containsExactWord(val, currentWord)) {
+      setInput('')
       onSubmitGuess(val)
     } else {
+      setInput('')
       onSendChatMessage(val)
     }
   }
@@ -72,7 +100,7 @@ export default function ActivityFeed({
             className="text-sm p-1.5 rounded"
             style={{
               animation: 'fade-in 0.3s ease-out',
-              background: entry.type === 'guess' && entry.correct ? 'rgba(76, 175, 125, 0.15)' : 'transparent',
+              background: entry.type === 'guess' && entry.correct ? 'rgba(76, 175, 125, 0.15)' : entry.type === 'clue' ? 'rgba(91, 79, 207, 0.06)' : 'transparent',
             }}
           >
             <span
@@ -80,12 +108,14 @@ export default function ActivityFeed({
               style={{
                 color: entry.type === 'guess' && entry.correct
                   ? 'var(--color-correct)'
+                  : entry.type === 'clue'
+                  ? 'var(--color-primary)'
                   : entry.type === 'chat'
                   ? 'var(--color-text-muted)'
                   : 'var(--color-text)',
               }}
             >
-              {entry.playerName}:
+              {entry.type === 'clue' ? '🔍' : entry.playerName}:
             </span>
             <span
               style={{
@@ -110,21 +140,28 @@ export default function ActivityFeed({
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={isDescriber ? 'Type a message...' : 'Type a guess or chat message...'}
+            onChange={(e) => { setInput(e.target.value); setWarning(false) }}
+            placeholder={
+              isDescriber && roomState === 'describing'
+                ? 'Type a clue...'
+                : !isDescriber && roomState === 'describing'
+                ? 'Type your guess or chat...'
+                : 'Type a message...'
+            }
             className="flex-1"
             style={{
               background: 'var(--color-surface-alt)',
-              border: '2px solid var(--color-border)',
+              border: `2px solid ${warning ? 'var(--color-wrong)' : 'var(--color-border)'}`,
               borderRadius: '12px',
               padding: '10px 14px',
               fontSize: '0.85rem',
               fontFamily: "'Nunito', sans-serif",
               outline: 'none',
               color: 'var(--color-text)',
+              transition: 'border-color 0.2s ease',
             }}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(91, 79, 207, 0.15)'; }}
-            onBlur={(e) => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.boxShadow = 'none'; }}
+            onFocus={(e) => { if (!warning) { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(91, 79, 207, 0.15)'; } }}
+            onBlur={(e) => { if (!warning) { e.target.style.borderColor = 'var(--color-border)'; } e.target.style.boxShadow = 'none'; }}
             maxLength={200}
           />
           <button
@@ -145,6 +182,11 @@ export default function ActivityFeed({
             Send
           </button>
         </div>
+        {warning && (
+          <p className="text-sm mt-1.5 font-medium" style={{ color: 'var(--color-wrong)', animation: 'fade-in 0.2s ease-out' }}>
+            ⚠️ Your clue contains the secret word!
+          </p>
+        )}
       </form>
     </div>
   )

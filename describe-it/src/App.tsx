@@ -83,6 +83,11 @@ export default function App() {
     setScreen('home')
   }, [game])
 
+  const handleHome = useCallback(async () => {
+    await game.leaveRoom()
+    setScreen('home')
+  }, [game])
+
   if (configMissing) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -121,7 +126,7 @@ export default function App() {
     return (
       <>
         <DarkToggle dark={dark} onToggle={toggleDark} />
-        <FinalResults players={game.players} wordHistory={roomData.wordHistory || {}} onPlayAgain={game.playAgain} isHost={game.isHost} />
+        <FinalResults players={game.players} wordHistory={roomData.wordHistory || {}} onPlayAgain={game.playAgain} onHome={handleHome} isHost={game.isHost} />
       </>
     )
   }

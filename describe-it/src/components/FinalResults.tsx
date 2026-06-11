@@ -6,10 +6,11 @@ interface Props {
   players: Player[]
   wordHistory: Record<string, RoundHistory>
   onPlayAgain: () => void
+  onHome: () => void
   isHost: boolean
 }
 
-export default function FinalResults({ players, wordHistory, onPlayAgain, isHost }: Props) {
+export default function FinalResults({ players, wordHistory, onPlayAgain, onHome, isHost }: Props) {
   const [copied, setCopied] = useState(false)
   const sorted = [...players].sort((a, b) => b.score - a.score)
   const histories = Object.values(wordHistory)
@@ -200,6 +201,25 @@ export default function FinalResults({ players, wordHistory, onPlayAgain, isHost
               Waiting for host to start a new game...
             </p>
           )}
+          <button
+            onClick={onHome}
+            className="w-full font-medium transition-all"
+            style={{
+              background: 'transparent',
+              color: 'var(--color-text-muted)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-btn)',
+              padding: '12px 32px',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              minHeight: '48px',
+            }}
+            onMouseDown={(e) => { (e.target as HTMLButtonElement).style.transform = 'scale(0.96)'; }}
+            onMouseUp={(e) => { (e.target as HTMLButtonElement).style.transform = 'scale(1)'; }}
+            onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.transform = 'scale(1)'; }}
+          >
+            🏠 Home
+          </button>
         </div>
       </div>
     </div>

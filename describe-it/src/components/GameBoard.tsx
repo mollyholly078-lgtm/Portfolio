@@ -117,7 +117,6 @@ export default function GameBoard({
         }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: '1.1rem' }}>🐱</span>
           <span
             className="font-semibold"
             style={{

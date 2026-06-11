@@ -25,7 +25,7 @@ export default function FinalResults({ players, wordHistory, onPlayAgain, onHome
       const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '  '
       return `${medal} ${p.name}: ${p.score.toFixed(1)}`
     })
-    const text = `🐱 Catkey Results\n${lines.join('\n')}\n\nPlay at: https://mollyholly078-lgtm.github.io/Portfolio/game/`
+    const text = `Catkey Results\n${lines.join('\n')}\n\nPlay at: https://mollyholly078-lgtm.github.io/Portfolio/game/`
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)

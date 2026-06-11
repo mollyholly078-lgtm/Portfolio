@@ -351,7 +351,7 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, d
               minHeight: '44px',
             }}
             onClick={() => {
-              const text = `🐱 Catkey Best Score: ${bestScore} points!`;
+              const text = `Catkey Best Score: ${bestScore} points!`;
               navigator.clipboard.writeText(text).then(() => {
                 const el = document.activeElement as HTMLButtonElement;
                 const orig = el.textContent;

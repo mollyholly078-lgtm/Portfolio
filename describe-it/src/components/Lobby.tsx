@@ -34,7 +34,7 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
               color: 'var(--color-primary)',
             }}
           >
-            🐱 Catkey
+            Catkey
           </h1>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Room Code</p>
           <div

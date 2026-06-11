@@ -23,7 +23,7 @@ type ActivityEntry = {
   correct?: boolean
 }
 
-function containsExactWord(text: string, target: string): boolean {
+function containsWord(text: string, target: string): boolean {
   const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   return new RegExp(`\\b${escaped}\\b`, 'i').test(text)
 }
@@ -69,14 +69,14 @@ export default function ActivityFeed({
     if (!val) return
 
     if (isDescriber && roomState === 'describing' && currentWord) {
-      if (containsExactWord(val, currentWord)) {
+      if (containsWord(val, currentWord)) {
         setWarning(true)
         return
       }
       setWarning(false)
       setInput('')
       onSubmitDescription?.(val)
-    } else if (!isDescriber && roomState === 'describing' && currentWord && containsExactWord(val, currentWord)) {
+    } else if (!isDescriber && roomState === 'describing' && currentWord && val.toLowerCase() === currentWord.toLowerCase()) {
       setInput('')
       onSubmitGuess(val)
     } else {
@@ -145,7 +145,7 @@ export default function ActivityFeed({
               isDescriber && roomState === 'describing'
                 ? 'Type a clue...'
                 : !isDescriber && roomState === 'describing'
-                ? 'Type your guess or chat...'
+                ? 'Type the word to guess, or type a message...'
                 : 'Type a message...'
             }
             className="flex-1"

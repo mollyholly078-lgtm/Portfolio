@@ -9,9 +9,8 @@ import type {
 } from '../types'
 import { CATEGORIES, PLAYER_COLORS, REVEAL_DURATION } from '../types'
 import { generateWords } from '../utils/claude'
-function guessContainsWord(guess: string, answer: string): boolean {
-  const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return new RegExp(`\\b${escaped}\\b`, 'i').test(guess)
+function guessMatchesExactly(guess: string, answer: string): boolean {
+  return guess.trim().toLowerCase() === answer.trim().toLowerCase()
 }
 
 interface GameOptions {
@@ -377,7 +376,7 @@ export function useGame(): UseGameReturn {
       word: trimmed, correct: false, timestamp: Date.now(),
     }
     if (room.state === 'describing' && room.currentWord) {
-      guessEntry.correct = guessContainsWord(trimmed, room.currentWord)
+      guessEntry.correct = guessMatchesExactly(trimmed, room.currentWord)
     }
     try {
       const guessRef = push(ref(db, `rooms/${roomCode}/guesses`))

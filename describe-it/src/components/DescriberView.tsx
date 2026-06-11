@@ -22,8 +22,8 @@ function ShowWordButton({ word }: { word: string }) {
   const [show, setShow] = useState(false)
   return (
     <button onClick={() => setShow(!show)}
-      className="mt-1 text-[10px] text-text-muted hover:text-primary transition-colors px-2 py-0.5 rounded border border-border hover:border-primary/40">
-      {show ? word : '👁 peek word'}
+      className="block mx-auto mt-2 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors px-3 py-1.5 rounded-lg">
+      {show ? `"${word}"` : '👁 Tap to see the word'}
     </button>
   )
 }

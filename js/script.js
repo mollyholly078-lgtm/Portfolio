@@ -164,4 +164,29 @@ navLinks.querySelectorAll('a').forEach(link => {
   });
 });
 
+// Video play button - load iframe on desktop, open in Google Drive on mobile
+document.querySelectorAll('.video-wrapper').forEach(wrapper => {
+  const poster = wrapper.querySelector('.video-poster');
+  if (!poster) return;
+
+  poster.addEventListener('click', function() {
+    const videoId = wrapper.dataset.videoId;
+    if (!videoId) return;
+
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+
+    if (isMobile) {
+      window.open(`https://drive.google.com/file/d/${videoId}/view`, '_blank');
+    } else {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+      iframe.allow = 'autoplay; fullscreen';
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.loading = 'lazy';
+      wrapper.appendChild(iframe);
+      poster.classList.add('loaded');
+    }
+  });
+});
+
 

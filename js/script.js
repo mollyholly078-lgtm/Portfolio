@@ -164,27 +164,4 @@ navLinks.querySelectorAll('a').forEach(link => {
   });
 });
 
-// Video error fallback - direct Google Drive link
-document.querySelectorAll('.video-wrapper video').forEach(video => {
-  video.addEventListener('error', function() {
-    const wrapper = this.closest('.video-wrapper');
-    if (!wrapper || wrapper.querySelector('.video-fallback')) return;
 
-    const source = this.querySelector('source');
-    const match = source ? source.src.match(/id=([^&]+)/) : null;
-    if (!match) return;
-
-    const fallback = document.createElement('div');
-    fallback.className = 'video-fallback';
-    fallback.innerHTML = `
-      <p>Play in Google Drive</p>
-      <a href="https://drive.google.com/file/d/${match[1]}/view" target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-        Open Video
-      </a>
-    `;
-    wrapper.appendChild(fallback);
-  });
-});

@@ -91,10 +91,16 @@ h1, h2, h3, h4, h5, h6 {
 button {
   cursor: pointer;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 input, textarea, select {
   font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 /* Animations */
@@ -150,6 +156,17 @@ input, textarea, select {
 @keyframes confetti-fall {
   0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
   100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes message-pop {
+  0% { opacity: 0; transform: translateY(6px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Utility classes */
@@ -221,4 +238,30 @@ input, textarea, select {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-card);
+}
+
+/* Webkit scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+/* Smooth scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

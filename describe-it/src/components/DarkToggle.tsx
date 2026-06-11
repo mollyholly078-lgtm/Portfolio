@@ -12,7 +12,7 @@ export default function DarkToggle({ dark, onToggle }: Props) {
       style={{
         position: 'fixed',
         top: '12px',
-        right: '12px',
+        left: '12px',
         zIndex: 9999,
         width: '40px',
         height: '40px',

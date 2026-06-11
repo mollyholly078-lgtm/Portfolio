@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { CATEGORY_EMOJIS } from '../types'
 import type { Category } from '../types'
 import LetterBlanks from './LetterBlanks'
@@ -18,40 +18,14 @@ export default function GuesserView({
   currentWord,
   descriptions,
   state,
-  onSubmitGuess,
   guesses,
 }: Props) {
-  const [guess, setGuess] = useState('')
-  const [shakeInput, setShakeInput] = useState(false)
-  const [errorText, setErrorText] = useState<string | null>(null)
   const [questionKey, setQuestionKey] = useState(0)
   const guessesList = Object.values(guesses).sort((a, b) => a.timestamp - b.timestamp)
 
   useEffect(() => {
-    setGuess('')
-    setErrorText(null)
-    setShakeInput(false)
     setQuestionKey(prev => prev + 1)
   }, [state, currentWord])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!guess.trim()) return
-    const g = guess.trim()
-    setGuess('')
-    onSubmitGuess(g)
-  }
-
-  useEffect(() => {
-    const lastGuess = guessesList[guessesList.length - 1]
-    if (lastGuess && lastGuess.playerName === 'You' || lastGuess?.playerId === 'local') {
-      if (!lastGuess.correct) {
-        setShakeInput(true)
-        setErrorText('Not quite right — try again!')
-        setTimeout(() => { setShakeInput(false); setErrorText(null) }, 1500)
-      }
-    }
-  }, [guessesList.length])
 
   const isRevealing = state === 'revealing'
 
@@ -64,7 +38,7 @@ export default function GuesserView({
           color: 'var(--color-accent)',
         }}
       >
-        Guess the word!
+        {isRevealing ? 'Round Complete!' : 'Guess the word!'}
       </div>
 
       {/* Category + Letter Blanks */}
@@ -109,80 +83,6 @@ export default function GuesserView({
           </>
         )}
       </div>
-
-      {/* Input Area */}
-      {!isRevealing && (
-        <form onSubmit={handleSubmit} className="mb-3 flex flex-col items-center">
-          <div className="flex gap-2 w-full" style={{ maxWidth: '360px' }}>
-            <input
-              type="text"
-              value={guess}
-              onChange={(e) => { setGuess(e.target.value); setErrorText(null) }}
-              placeholder="Type your guess..."
-              autoFocus
-              className={`flex-1 min-w-0 ${shakeInput ? 'animate-shake' : ''}`}
-              style={{
-                width: '100%',
-                maxWidth: '360px',
-                border: `2px solid ${errorText ? 'var(--color-wrong)' : 'var(--color-border)'}`,
-                borderRadius: '12px',
-                padding: '14px 18px',
-                fontSize: '1.1rem',
-                fontFamily: "'Nunito', sans-serif",
-                outline: 'none',
-                color: 'var(--color-text)',
-                background: 'var(--color-surface)',
-                transition: 'border-color 0.2s ease',
-              }}
-              onFocus={(e) => {
-                if (!errorText) {
-                  e.target.style.borderColor = 'var(--color-primary)';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(91, 79, 207, 0.15)';
-                }
-              }}
-              onBlur={(e) => {
-                if (!errorText) {
-                  e.target.style.borderColor = 'var(--color-border)';
-                }
-                e.target.style.boxShadow = 'none';
-              }}
-              maxLength={100}
-            />
-            <button
-              type="submit"
-              disabled={!guess.trim()}
-              style={{
-                background: !guess.trim() ? 'var(--color-primary)' : 'var(--color-primary)',
-                opacity: !guess.trim() ? 0.5 : 1,
-                color: '#fff',
-                border: 'none',
-                borderRadius: 'var(--radius-btn)',
-                padding: '14px 24px',
-                fontSize: '1rem',
-                fontWeight: 700,
-                letterSpacing: '0.5px',
-                cursor: !guess.trim() ? 'not-allowed' : 'pointer',
-                transition: 'transform 0.08s ease',
-                minHeight: '48px',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Guess
-            </button>
-          </div>
-          {errorText && (
-            <p
-              className="text-sm mt-2 font-medium"
-              style={{
-                color: 'var(--color-wrong)',
-                animation: 'fade-in 0.2s ease-out',
-              }}
-            >
-              {errorText}
-            </p>
-          )}
-        </form>
-      )}
 
       {/* Guesses List */}
       {guessesList.length > 0 && (

@@ -4,8 +4,7 @@ import DescriberView from './DescriberView'
 import GuesserView from './GuesserView'
 import WordReveal from './WordReveal'
 import Scoreboard from './Scoreboard'
-import ChatPanel from './ChatPanel'
-import GuessFeed from './GuessFeed'
+import ActivityFeed from './ActivityFeed'
 import ConnectionStatus from './ConnectionStatus'
 import Confetti from 'react-confetti-explosion'
 
@@ -268,24 +267,24 @@ export default function GameBoard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 lg:w-72">
+        <div className="flex flex-col gap-2 lg:w-80">
           <div
-            className="overflow-hidden h-48 lg:h-56 flex flex-col"
+            className="overflow-hidden flex-1 flex flex-col"
             style={{
               background: 'var(--color-surface)',
               borderRadius: 'var(--radius-card)',
               boxShadow: 'var(--shadow-card)',
+              minHeight: '300px',
+              maxHeight: '500px',
             }}>
-            <GuessFeed guesses={guesses} />
-          </div>
-          <div
-            className="overflow-hidden flex-1 lg:flex-none lg:h-48 flex flex-col"
-            style={{
-              background: 'var(--color-surface)',
-              borderRadius: 'var(--radius-card)',
-              boxShadow: 'var(--shadow-card)',
-            }}>
-            <ChatPanel messages={room.chatMessages || {}} onSend={onSendChatMessage} />
+            <ActivityFeed
+              guesses={guesses}
+              chatMessages={room.chatMessages || {}}
+              onSubmitGuess={onSubmitGuess}
+              onSendChatMessage={onSendChatMessage}
+              isDescriber={isDescriber}
+              roomState={room.state}
+            />
           </div>
         </div>
       </div>

@@ -242,7 +242,6 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, d
       {dark !== undefined && onToggleDark && <DarkToggle dark={dark} onToggle={onToggleDark} />}
       <div className="w-full max-w-sm text-center">
         <div style={{ marginBottom: '1.5rem' }}>
-          <span style={{ fontSize: '3.5rem', display: 'block', marginBottom: '0.5rem' }}>🐱</span>
           <h1
             style={{
               fontFamily: "'Fraunces', Georgia, serif",

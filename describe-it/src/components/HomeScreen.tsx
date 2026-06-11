@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import DarkToggle from './DarkToggle'
 
 interface Props {
   onCreateRoom: (name: string) => Promise<string>
   onJoinRoom: (code: string, name: string) => Promise<void>
   loading: boolean
   error: string | null
+  dark?: boolean
+  onToggleDark?: () => void
 }
 
-export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error }: Props) {
+export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, dark, onToggleDark }: Props) {
   const [screen, setScreen] = useState<'splash' | 'create' | 'join'>('splash')
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
@@ -236,6 +239,7 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error }:
         animation: 'fade-in 0.4s ease-out',
       }}
     >
+      {dark !== undefined && onToggleDark && <DarkToggle dark={dark} onToggle={onToggleDark} />}
       <div className="w-full max-w-sm text-center">
         <div style={{ marginBottom: '1.5rem' }}>
           <span style={{ fontSize: '3.5rem', display: 'block', marginBottom: '0.5rem' }}>🐱</span>

@@ -337,9 +337,11 @@ export function useGame(): UseGameReturn {
   const giveUpTurn = useCallback(async () => {
     if (!roomCode || !uid || !room) return
     try {
+      const describerId = room.playerOrder[room.currentDescriberIndex]
       await update(ref(db), {
         [`rooms/${roomCode}/state`]: 'revealing',
         [`rooms/${roomCode}/wordRevealEndTime`]: Date.now() + REVEAL_DURATION * 1000,
+        [`rooms/${roomCode}/players/${describerId}/score`]: (room.players[describerId]?.score || 0) + 1,
         [`rooms/${roomCode}/wordHistory/round${room.currentRound}`]: {
           word: room.currentWord,
           category: room.currentCategory,

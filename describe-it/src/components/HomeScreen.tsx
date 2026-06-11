@@ -30,7 +30,7 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error }:
         <div className="w-full max-w-md animate-fade-in">
           <div className="text-center mb-10">
             <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              DescribeIt
+              Catkey
             </h1>
             <p className="text-text-muted">A word description guessing game</p>
           </div>

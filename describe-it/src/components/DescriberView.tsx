@@ -11,12 +11,13 @@ interface Props {
   category: string
   descriptions: string
   timeLeft: number
+  turnDuration: number
   state: 'choosing' | 'describing'
   onChooseWord: (word: string) => Promise<void>
+  onSetCustomWord: (word: string) => Promise<void>
   onSkipWords: () => Promise<void>
   onSubmitDescription: (text: string) => Promise<void>
   guesses: Record<string, GuessEntry>
-  skippedOnce: boolean
 }
 
 export default function DescriberView({
@@ -25,79 +26,95 @@ export default function DescriberView({
   category,
   descriptions,
   timeLeft,
+  turnDuration,
   state,
   onChooseWord,
+  onSetCustomWord,
   onSkipWords,
   onSubmitDescription,
   guesses,
-  skippedOnce,
 }: Props) {
   const [desc, setDesc] = useState('')
   const [warning, setWarning] = useState(false)
+  const [customWord, setCustomWord] = useState('')
+  const [showCustom, setShowCustom] = useState(false)
 
   const guessesList = Object.values(guesses)
 
   useEffect(() => {
     setDesc('')
     setWarning(false)
+    setCustomWord('')
+    setShowCustom(false)
   }, [state, word])
 
   if (state === 'choosing') {
     return (
-      <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
-        <div className="bg-primary/10 rounded-full px-4 py-1 mb-4 text-sm font-semibold text-primary">
+      <div className="flex flex-col items-center p-4 animate-fade-in">
+        <div className="bg-primary/10 rounded-full px-4 py-1 mb-3 text-sm font-semibold text-primary">
           You are describing!
         </div>
-        <h2 className="text-xl font-bold mb-2">Pick a word to describe</h2>
-        <p className="text-text-muted mb-6">
-          {CATEGORY_EMOJIS[category as Category] || ''} Category: {category}
+        <p className="text-text-muted mb-3 text-sm">
+          {CATEGORY_EMOJIS[category as Category] || ''} {category}
         </p>
-        <div className="space-y-3 w-full max-w-sm">
+
+        <div className="space-y-2 w-full max-w-sm mb-3">
           {wordOptions.map((w, i) => (
             <button
               key={i}
               onClick={() => onChooseWord(w)}
-              className="w-full py-4 px-6 bg-surface hover:bg-surface-light border border-border rounded-xl text-lg font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] animate-slide-up"
-              style={{ animationDelay: `${i * 100}ms` }}
+              className="w-full py-3 px-4 bg-surface hover:bg-surface-light border border-border rounded-xl text-base font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] animate-slide-up"
+              style={{ animationDelay: `${i * 80}ms` }}
             >
               {w}
             </button>
           ))}
         </div>
-        {!skippedOnce && (
-          <button
-            onClick={onSkipWords}
-            className="mt-6 text-sm text-text-muted hover:text-accent transition-colors"
-          >
-            Skip — get 3 new words
+
+        <button onClick={onSkipWords} className="text-sm text-text-muted hover:text-accent transition-colors mb-3">
+          Skip — get 3 new words
+        </button>
+
+        {!showCustom ? (
+          <button onClick={() => setShowCustom(true)} className="text-sm text-primary hover:text-primary-dark transition-colors">
+            + Type my own word
           </button>
-        )}
-        {skippedOnce && (
-          <p className="mt-6 text-xs text-text-muted">You've already used your skip</p>
+        ) : (
+          <form onSubmit={(e) => { e.preventDefault(); if (customWord.trim()) onSetCustomWord(customWord.trim()) }} className="w-full max-w-sm flex gap-2">
+            <input
+              type="text" value={customWord} onChange={(e) => setCustomWord(e.target.value)}
+              placeholder="Type your word..." autoFocus
+              className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button type="submit" disabled={!customWord.trim()}
+              className="bg-primary hover:bg-primary-dark disabled:opacity-50 px-3 py-2 rounded-lg text-sm font-semibold transition-colors">
+              Use
+            </button>
+          </form>
         )}
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col p-6 animate-fade-in">
-      <div className="bg-primary/10 rounded-full px-4 py-1 mb-4 text-sm font-semibold text-primary self-center">
+    <div className="flex flex-col p-4 animate-fade-in">
+      <div className="bg-primary/10 rounded-full px-4 py-1 mb-3 text-sm font-semibold text-primary self-center">
         You are describing!
       </div>
 
-      <div className="mb-4">
-        <Timer timeLeft={timeLeft} />
+      <div className="mb-3">
+        <Timer timeLeft={timeLeft} total={turnDuration} />
       </div>
 
-      <div className="text-center mb-4">
+      <div className="text-center mb-3">
         <p className="text-xs text-text-muted uppercase tracking-wider mb-1">
           {CATEGORY_EMOJIS[category as Category] || ''} {category}
         </p>
         <LetterBlanks word={word} />
       </div>
 
-      <div className="bg-surface rounded-xl p-4 mb-4 max-h-48 overflow-y-auto scrollbar-thin">
-        <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Your clues</p>
+      <div className="bg-surface rounded-xl p-3 mb-3 max-h-36 overflow-y-auto scrollbar-thin">
+        <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Your clues</p>
         {descriptions ? (
           <div className="space-y-1">
             {descriptions.split('\n').filter(Boolean).map((line, i) => (
@@ -114,50 +131,33 @@ export default function DescriberView({
           e.preventDefault()
           if (!desc.trim()) return
           const containsWord = desc.toLowerCase().includes(word.toLowerCase())
-          if (containsWord) {
-            setWarning(true)
-            return
-          }
+          if (containsWord) { setWarning(true); return }
           setWarning(false)
           onSubmitDescription(desc.trim())
           setDesc('')
         }}
-        className="mb-4"
+        className="mb-3"
       >
         <div className="flex gap-2">
           <input
-            type="text"
-            value={desc}
-            onChange={(e) => {
-              setDesc(e.target.value)
-              setWarning(false)
-            }}
-            placeholder="Type a clue..."
-            className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
-            maxLength={200}
-            autoFocus
+            type="text" value={desc} onChange={(e) => { setDesc(e.target.value); setWarning(false) }}
+            placeholder="Type a clue..." autoFocus
+            className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50" maxLength={200}
           />
-          <button
-            type="submit"
-            disabled={!desc.trim()}
-            className="bg-primary hover:bg-primary-dark disabled:opacity-50 px-4 py-3 rounded-lg font-semibold transition-colors"
-          >
+          <button type="submit" disabled={!desc.trim()}
+            className="bg-primary hover:bg-primary-dark disabled:opacity-50 px-3 py-2 rounded-lg text-sm font-semibold transition-colors">
             Send
           </button>
         </div>
-        {warning && (
-          <p className="text-danger text-xs mt-1">⚠️ Your description contains the secret word!</p>
-        )}
+        {warning && <p className="text-danger text-xs mt-1">⚠️ Your description contains the secret word!</p>}
       </form>
 
       {guessesList.length > 0 && (
-        <div className="bg-surface rounded-xl p-4 flex-1 overflow-y-auto max-h-40 scrollbar-thin">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Guesses</p>
+        <div className="bg-surface rounded-xl p-3 flex-1 overflow-y-auto max-h-32 scrollbar-thin">
+          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Guesses</p>
           <div className="space-y-1">
             {guessesList.sort((a, b) => a.timestamp - b.timestamp).map((g) => (
-              <p key={g.id} className={`text-sm ${g.correct ? 'text-success font-bold' : ''}`}>
-                {g.playerName}: {g.word}
-              </p>
+              <p key={g.id} className={`text-sm ${g.correct ? 'text-success font-bold' : ''}`}>{g.playerName}: {g.word}</p>
             ))}
           </div>
         </div>

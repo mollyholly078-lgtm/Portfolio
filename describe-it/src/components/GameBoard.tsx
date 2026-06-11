@@ -12,35 +12,40 @@ import Confetti from 'react-confetti-explosion'
 interface Props {
   room: Room
   isDescriber: boolean
+  isHost: boolean
   timeLeft: number
+  turnDuration: number
   onChooseWord: (word: string) => Promise<void>
+  onSetCustomWord: (word: string) => Promise<void>
   onSkipWords: () => Promise<void>
   onSubmitDescription: (text: string) => Promise<void>
   onSubmitGuess: (word: string) => Promise<void>
   onSendChatMessage: (message: string) => Promise<void>
+  onEndGame: () => Promise<void>
 }
 
 export default function GameBoard({
   room,
   isDescriber,
+  isHost,
   timeLeft,
+  turnDuration,
   onChooseWord,
+  onSetCustomWord,
   onSkipWords,
   onSubmitDescription,
   onSubmitGuess,
   onSendChatMessage,
+  onEndGame,
 }: Props) {
   const [showConfetti, setShowConfetti] = useState(false)
-  const [skippedOnce, setSkippedOnce] = useState<boolean>(false)
   const prevCorrectGuesses = useRef<Set<string>>(new Set())
 
   const guesses = room.guesses || {}
   const guessesList = Object.values(guesses)
 
   useEffect(() => {
-    const currentCorrectIds = new Set(
-      guessesList.filter(g => g.correct).map(g => g.id)
-    )
+    const currentCorrectIds = new Set(guessesList.filter(g => g.correct).map(g => g.id))
     if (currentCorrectIds.size > prevCorrectGuesses.current.size) {
       setShowConfetti(true)
       setTimeout(() => setShowConfetti(false), 3000)
@@ -63,51 +68,44 @@ export default function GameBoard({
 
       <ConnectionStatus players={players} />
 
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 max-w-7xl mx-auto w-full">
-        <div className="flex-1 flex flex-col gap-4 min-w-0">
+      {isHost && (
+        <div className="flex justify-end px-4 pt-2">
+          <button onClick={onEndGame}
+            className="text-xs text-text-muted hover:text-danger transition-colors px-3 py-1.5 rounded-lg border border-border hover:border-danger/50">
+            End Game
+          </button>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 max-w-7xl mx-auto w-full">
+        <div className="flex-1 flex flex-col gap-3 min-w-0">
           <Scoreboard
-            players={players}
-            describerId={describerId}
-            currentRound={room.currentRound}
-            totalRounds={room.settings.totalRounds}
+            players={players} describerId={describerId}
+            currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
           />
 
-          <div className="bg-surface rounded-xl flex-1 flex flex-col min-h-[400px]">
+          <div className="bg-surface rounded-xl flex-1 flex flex-col min-h-[350px]">
             {room.state === 'choosing' && isDescriber && (
               <DescriberView
-                word=""
-                wordOptions={room.wordOptions || []}
-                category={room.currentCategory}
-                descriptions=""
-                timeLeft={timeLeft}
-                state="choosing"
-            onChooseWord={onChooseWord}
-            onSkipWords={async () => { setSkippedOnce(true); await onSkipWords() }}
-                onSubmitDescription={async () => {}}
-                guesses={{}}
-                skippedOnce={skippedOnce}
+                word="" wordOptions={room.wordOptions || []} category={room.currentCategory}
+                descriptions="" timeLeft={timeLeft} turnDuration={turnDuration} state="choosing"
+                onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
+                onSkipWords={onSkipWords} onSubmitDescription={async () => {}} guesses={{}}
               />
             )}
 
             {room.state === 'describing' && isDescriber && (
               <DescriberView
-                word={room.currentWord}
-                wordOptions={room.wordOptions || []}
-                category={room.currentCategory}
-                descriptions={room.descriptions || ''}
-                timeLeft={timeLeft}
-                state="describing"
-                onChooseWord={onChooseWord}
-                onSkipWords={async () => {}}
-                onSubmitDescription={onSubmitDescription}
-                guesses={guesses}
-                skippedOnce={skippedOnce}
+                word={room.currentWord} wordOptions={room.wordOptions || []} category={room.currentCategory}
+                descriptions={room.descriptions || ''} timeLeft={timeLeft} turnDuration={turnDuration} state="describing"
+                onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
+                onSkipWords={async () => {}} onSubmitDescription={onSubmitDescription} guesses={guesses}
               />
             )}
 
             {room.state === 'choosing' && !isDescriber && (
-              <div className="flex items-center justify-center p-8 animate-fade-in">
-                <p className="text-text-muted text-lg">
+              <div className="flex items-center justify-center p-6 animate-fade-in">
+                <p className="text-text-muted text-base">
                   {room.currentCategory
                     ? `Describer is choosing a word (${room.currentCategory})...`
                     : 'Describer is choosing a category...'}
@@ -117,38 +115,24 @@ export default function GameBoard({
 
             {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
               <GuesserView
-                category={room.currentCategory}
-                currentWord={room.currentWord}
-                descriptions={room.descriptions || ''}
-                timeLeft={timeLeft}
-                state={room.state}
-                onSubmitGuess={onSubmitGuess}
-                guesses={guesses}
-
+                category={room.currentCategory} currentWord={room.currentWord}
+                descriptions={room.descriptions || ''} timeLeft={timeLeft} turnDuration={turnDuration} state={room.state}
+                onSubmitGuess={onSubmitGuess} guesses={guesses}
               />
             )}
 
             {room.state === 'revealing' && (
-              <WordReveal
-                word={room.currentWord}
-                category={room.currentCategory}
-                history={currentHistory}
-                timeLeft={timeLeft}
-              />
+              <WordReveal word={room.currentWord} category={room.currentCategory} history={currentHistory} timeLeft={timeLeft} />
             )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 lg:w-80">
-          <div className="bg-surface rounded-xl overflow-hidden h-64 lg:h-72 flex flex-col">
+        <div className="flex flex-col gap-3 lg:w-72">
+          <div className="bg-surface rounded-xl overflow-hidden h-56 lg:h-64 flex flex-col">
             <GuessFeed guesses={guesses} />
           </div>
-
-          <div className="bg-surface rounded-xl overflow-hidden flex-1 lg:flex-none lg:h-64 flex flex-col">
-            <ChatPanel
-              messages={room.chatMessages || {}}
-              onSend={onSendChatMessage}
-            />
+          <div className="bg-surface rounded-xl overflow-hidden flex-1 lg:flex-none lg:h-56 flex flex-col">
+            <ChatPanel messages={room.chatMessages || {}} onSend={onSendChatMessage} />
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ interface Props {
   currentWord: string
   descriptions: string
   timeLeft: number
+  turnDuration: number
   state: 'choosing' | 'describing' | 'revealing'
   onSubmitGuess: (word: string) => Promise<void>
   guesses: Record<string, GuessEntry>
@@ -20,6 +21,7 @@ export default function GuesserView({
   currentWord,
   descriptions,
   timeLeft,
+  turnDuration,
   state,
   onSubmitGuess,
   guesses,
@@ -42,7 +44,7 @@ export default function GuesserView({
 
       {!isRevealing && (
         <div className="mb-4">
-          <Timer timeLeft={timeLeft} />
+          <Timer timeLeft={timeLeft} total={turnDuration} />
         </div>
       )}
 

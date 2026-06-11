@@ -8,40 +8,45 @@ import type {
   Room, Player, Category, ChatMessage,
   GuessEntry,
 } from '../types'
-import { CATEGORIES, PLAYER_COLORS, TURN_DURATION, REVEAL_DURATION } from '../types'
+import { CATEGORIES, PLAYER_COLORS, REVEAL_DURATION } from '../types'
 import { generateWords } from '../utils/claude'
 import { isCorrectGuess } from '../utils/levenshtein'
 
+interface GameOptions {
+  totalRounds: number
+  timerDuration: number
+  selectedCategories: string[]
+}
+
 interface UseGameReturn {
-  // Room
   room: Room | null
   roomCode: string | null
   loading: boolean
   error: string | null
 
-  // Current player
   playerId: string | null
   playerName: string
   setPlayerName: (name: string) => void
 
-  // Actions
   createRoom: (playerName: string) => Promise<string>
   joinRoom: (code: string, playerName: string) => Promise<void>
   leaveRoom: () => Promise<void>
-  startGame: (totalRounds: number) => Promise<void>
+  startGame: (options: GameOptions) => Promise<void>
   chooseWord: (word: string) => Promise<void>
+  setCustomWord: (word: string) => Promise<void>
   skipWords: () => Promise<void>
   submitDescription: (text: string) => Promise<void>
   submitGuess: (word: string) => Promise<void>
   sendChatMessage: (message: string) => Promise<void>
   playAgain: () => Promise<void>
+  endGame: () => Promise<void>
 
-  // Derived
   isHost: boolean
   isDescriber: boolean
   players: Player[]
   describerId: string | null
   timeLeft: number
+  turnDuration: number
 }
 
 export function useGame(): UseGameReturn {
@@ -51,14 +56,15 @@ export function useGame(): UseGameReturn {
   const [error, setError] = useState<string | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [playerName, setPlayerName] = useState('')
-  const [timeLeft, setTimeLeft] = useState(TURN_DURATION)
+  const [timeLeft, setTimeLeft] = useState(60)
   const [uid, setUid] = useState<string | null>(null)
+  const [turnDuration, setTurnDuration] = useState(60)
 
   const currentUid = useRef<string | null>(null)
   const timerHandled = useRef<Record<string, boolean>>({})
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('describeit_uid')
+    const stored = sessionStorage.getItem('catkey_uid')
     if (stored) {
       currentUid.current = stored
       setUid(stored)
@@ -93,9 +99,12 @@ export function useGame(): UseGameReturn {
       setupPresence(roomCode, uid)
       setupLastActivity(roomCode)
 
+      const dur = data.settings?.timerDuration || 60
+      setTurnDuration(dur)
+
       if (data.state === 'describing' || data.state === 'choosing') {
         const elapsed = (Date.now() - (data.turnStartTime || Date.now())) / 1000
-        const remaining = Math.max(0, TURN_DURATION - elapsed)
+        const remaining = Math.max(0, dur - elapsed)
         setTimeLeft(Math.ceil(remaining))
       }
 
@@ -110,11 +119,12 @@ export function useGame(): UseGameReturn {
 
   useEffect(() => {
     if (!room || !uid) return
+    const dur = room.settings?.timerDuration || 60
 
     if (room.state === 'describing') {
       const interval = setInterval(() => {
         const elapsed = (Date.now() - (room.turnStartTime || Date.now())) / 1000
-        const remaining = Math.max(0, TURN_DURATION - elapsed)
+        const remaining = Math.max(0, dur - elapsed)
         setTimeLeft(Math.ceil(remaining))
       }, 1000)
       return () => clearInterval(interval)
@@ -127,9 +137,8 @@ export function useGame(): UseGameReturn {
       }, 1000)
       return () => clearInterval(interval)
     }
-  }, [room?.state, room?.turnStartTime, room?.wordRevealEndTime, uid])
+  }, [room?.state, room?.turnStartTime, room?.wordRevealEndTime, uid, room?.settings?.timerDuration])
 
-  // Timer expiry handling
   useEffect(() => {
     if (!roomCode || !room || timeLeft > 0) return
 
@@ -163,7 +172,10 @@ export function useGame(): UseGameReturn {
       return
     }
 
-    const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)]
+    const categories = room.settings?.selectedCategories?.length
+      ? room.settings.selectedCategories
+      : CATEGORIES
+    const category = categories[Math.floor(Math.random() * categories.length)] as Category
     const words = await generateWords(category).catch(() => getFallbackWords(category, 3))
 
     await update(ref(db), {
@@ -179,7 +191,6 @@ export function useGame(): UseGameReturn {
     })
   }
 
-  // Reset timer handler flags when state changes
   useEffect(() => {
     if (room?.state === 'describing') {
       timerHandled.current = {}
@@ -193,7 +204,7 @@ export function useGame(): UseGameReturn {
       const uidVal = currentUid.current || crypto.randomUUID()
       if (!currentUid.current) {
         currentUid.current = uidVal
-        sessionStorage.setItem('describeit_uid', uidVal)
+        sessionStorage.setItem('catkey_uid', uidVal)
         setUid(uidVal)
         setPlayerId(uidVal)
       }
@@ -216,7 +227,7 @@ export function useGame(): UseGameReturn {
         players: { [uidVal]: player },
         playerOrder: [uidVal],
         state: 'waiting',
-        settings: { totalRounds: 3 },
+        settings: { totalRounds: 3, timerDuration: 60, selectedCategories: [...CATEGORIES] },
         currentRound: 0,
         currentDescriberIndex: 0,
         currentCategory: '',
@@ -256,9 +267,6 @@ export function useGame(): UseGameReturn {
       if (playerCount >= 4) {
         throw new Error('Room is full (max 4 players)')
       }
-      if (playerCount < 0) {
-        // this can't happen, but TS
-      }
       if (roomData.state !== 'waiting') {
         throw new Error('Game already in progress')
       }
@@ -266,7 +274,7 @@ export function useGame(): UseGameReturn {
       const uidVal = currentUid.current || crypto.randomUUID()
       if (!currentUid.current) {
         currentUid.current = uidVal
-        sessionStorage.setItem('describeit_uid', uidVal)
+        sessionStorage.setItem('catkey_uid', uidVal)
         setUid(uidVal)
         setPlayerId(uidVal)
       }
@@ -341,7 +349,7 @@ export function useGame(): UseGameReturn {
     }
   }, [roomCode, uid, room])
 
-  const startGame = useCallback(async (totalRounds: number) => {
+  const startGame = useCallback(async (options: GameOptions) => {
     if (!roomCode || !uid) return
     setError(null)
     try {
@@ -349,7 +357,9 @@ export function useGame(): UseGameReturn {
       updates[`rooms/${roomCode}/state`] = 'choosing'
       updates[`rooms/${roomCode}/currentRound`] = 1
       updates[`rooms/${roomCode}/currentDescriberIndex`] = 0
-      updates[`rooms/${roomCode}/settings/totalRounds`] = totalRounds
+      updates[`rooms/${roomCode}/settings/totalRounds`] = options.totalRounds
+      updates[`rooms/${roomCode}/settings/timerDuration`] = options.timerDuration
+      updates[`rooms/${roomCode}/settings/selectedCategories`] = options.selectedCategories
       updates[`rooms/${roomCode}/turnStartTime`] = Date.now()
       updates[`rooms/${roomCode}/currentCategory`] = ''
       updates[`rooms/${roomCode}/currentWord`] = ''
@@ -360,7 +370,8 @@ export function useGame(): UseGameReturn {
       const playerOrder: string[] = playerOrderRef.val() || []
 
       if (playerOrder[0]) {
-        const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)]
+        const cats = options.selectedCategories?.length ? options.selectedCategories : CATEGORIES
+        const category = cats[Math.floor(Math.random() * cats.length)] as Category
         const words = await generateWords(category)
         updates[`rooms/${roomCode}/currentCategory`] = category
         updates[`rooms/${roomCode}/wordOptions`] = words
@@ -387,10 +398,29 @@ export function useGame(): UseGameReturn {
     }
   }, [roomCode, uid])
 
+  const setCustomWord = useCallback(async (word: string) => {
+    if (!roomCode || !uid || !room) return
+    try {
+      await update(ref(db), {
+        [`rooms/${roomCode}/currentWord`]: word,
+        [`rooms/${roomCode}/state`]: 'describing',
+        [`rooms/${roomCode}/turnStartTime`]: Date.now(),
+        [`rooms/${roomCode}/descriptions`]: '',
+        [`rooms/${roomCode}/guesses`]: {},
+        [`rooms/${roomCode}/wordOptions`]: [word, ...(room.wordOptions?.slice(1) || [])],
+      })
+    } catch (err: any) {
+      setError(err.message)
+    }
+  }, [roomCode, uid, room])
+
   const skipWords = useCallback(async () => {
     if (!roomCode || !uid || !room) return
     try {
-      const category = room.currentCategory as Category || CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)]
+      const categories = room.settings?.selectedCategories?.length
+        ? room.settings.selectedCategories
+        : CATEGORIES
+      const category = categories[Math.floor(Math.random() * categories.length)] as Category
       const words = await generateWords(category)
       await update(ref(db), {
         [`rooms/${roomCode}/currentCategory`]: category,
@@ -498,7 +528,17 @@ export function useGame(): UseGameReturn {
     }
   }, [roomCode, uid, room])
 
-  // Derived values
+  const endGame = useCallback(async () => {
+    if (!roomCode || !uid) return
+    try {
+      await update(ref(db), {
+        [`rooms/${roomCode}/state`]: 'finished',
+      })
+    } catch (err: any) {
+      setError(err.message)
+    }
+  }, [roomCode, uid])
+
   const players = room ? Object.values(room.players) : []
   const isHost = uid ? room?.hostId === uid : false
   const describerId = room ? room.playerOrder[room.currentDescriberIndex] : null
@@ -517,15 +557,18 @@ export function useGame(): UseGameReturn {
     leaveRoom,
     startGame,
     chooseWord,
+    setCustomWord,
     skipWords,
     submitDescription,
     submitGuess,
     sendChatMessage,
     playAgain,
+    endGame,
     isHost,
     isDescriber,
     players,
     describerId,
     timeLeft,
+    turnDuration,
   }
 }

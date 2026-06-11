@@ -27,13 +27,8 @@ export default function App() {
     const r = ref(db, `rooms/${game.roomCode}`)
     const cleanup = onValue(r, (snap) => {
       const data = snap.val()
-      if (!data) {
-        setScreen('home')
-        return
-      }
-      if (data.state === 'finished') {
-        setScreen('results')
-      }
+      if (!data) { setScreen('home'); return }
+      if (data.state === 'finished') setScreen('results')
     })
     return () => off(r, 'value', cleanup)
   }, [game.roomCode])
@@ -49,8 +44,8 @@ export default function App() {
     setScreen('lobby')
   }, [game])
 
-  const handleStart = useCallback(async (rounds: number) => {
-    await game.startGame(rounds)
+  const handleStart = useCallback(async (rounds: number, timer: number, categories: string[]) => {
+    await game.startGame({ totalRounds: rounds, timerDuration: timer, selectedCategories: categories })
   }, [game])
 
   const handleLeave = useCallback(async () => {
@@ -73,59 +68,31 @@ export default function App() {
             <li>3. Create a <strong>Realtime Database</strong> (start in test mode)</li>
             <li>4. Copy your config into <code className="bg-surface-light px-1 rounded">describe-it/.env</code></li>
           </ol>
-          <p className="text-xs text-text-muted">
-            After setting up, run <code className="bg-surface-light px-1 rounded">npm run dev</code> again
-          </p>
+          <p className="text-xs text-text-muted">After setting up, run <code className="bg-surface-light px-1 rounded">npm run dev</code> again</p>
         </div>
       </div>
     )
   }
 
   if (screen === 'home') {
-    return (
-      <HomeScreen
-        onCreateRoom={handleCreateRoom}
-        onJoinRoom={handleJoinRoom}
-        loading={game.loading}
-        error={game.error}
-      />
-    )
+    return <HomeScreen onCreateRoom={handleCreateRoom} onJoinRoom={handleJoinRoom} loading={game.loading} error={game.error} />
   }
 
   if (screen === 'lobby' && game.roomCode) {
-    return (
-      <Lobby
-        players={game.players}
-        roomCode={game.roomCode}
-        isHost={game.isHost}
-        onStart={handleStart}
-        onLeave={handleLeave}
-      />
-    )
+    return <Lobby players={game.players} roomCode={game.roomCode} isHost={game.isHost} onStart={handleStart} onLeave={handleLeave} />
   }
 
   if (screen === 'results' && roomData) {
-    return (
-      <FinalResults
-        players={game.players}
-        wordHistory={roomData.wordHistory || {}}
-        onPlayAgain={game.playAgain}
-        isHost={game.isHost}
-      />
-    )
+    return <FinalResults players={game.players} wordHistory={roomData.wordHistory || {}} onPlayAgain={game.playAgain} isHost={game.isHost} />
   }
 
   if (screen === 'game' && game.roomCode && game.playerId && roomData) {
     return (
       <GameBoard
-        room={roomData}
-        isDescriber={game.isDescriber}
-        timeLeft={game.timeLeft}
-        onChooseWord={game.chooseWord}
-        onSkipWords={game.skipWords}
-        onSubmitDescription={game.submitDescription}
-        onSubmitGuess={game.submitGuess}
-        onSendChatMessage={game.sendChatMessage}
+        room={roomData} isDescriber={game.isDescriber} isHost={game.isHost} timeLeft={game.timeLeft} turnDuration={game.turnDuration}
+        onChooseWord={game.chooseWord} onSetCustomWord={game.setCustomWord} onSkipWords={game.skipWords}
+        onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
+        onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame}
       />
     )
   }

@@ -70,6 +70,8 @@ export interface RoundHistory {
 
 export interface GameSettings {
   totalRounds: number
+  timerDuration: number
+  selectedCategories: string[]
 }
 
 export interface Room {
@@ -93,17 +95,17 @@ export interface Room {
 }
 
 export const PLAYER_COLORS = [
-  '#6366f1', // indigo
-  '#ec4899', // pink
-  '#14b8a6', // teal
-  '#f97316', // orange
-  '#8b5cf6', // violet
-  '#22c55e', // green
-  '#eab308', // yellow
-  '#ef4444', // red
+  '#6366f1',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#8b5cf6',
+  '#22c55e',
+  '#eab308',
+  '#ef4444',
 ]
 
 export const ROUND_OPTIONS = [3, 5, 10] as const
-export const TURN_DURATION = 60 // seconds
-export const REVEAL_DURATION = 3 // seconds
+export const TIMER_OPTIONS = [30, 45, 60, 90, 120] as const
+export const REVEAL_DURATION = 3
 export const ROOM_CODE_LENGTH = 6

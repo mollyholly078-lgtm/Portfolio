@@ -91,10 +91,21 @@ h1, h2, h3, h4, h5, h6 {
 button {
   cursor: pointer;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 input, textarea, select {
   font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Animations */

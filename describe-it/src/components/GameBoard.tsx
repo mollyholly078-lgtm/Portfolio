@@ -101,7 +101,7 @@ export default function GameBoard({
         <button
           onClick={onLeave}
           className="flex items-center justify-center"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '6px', borderRadius: '8px' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', padding: '10px', borderRadius: '8px', minWidth: '44px', minHeight: '44px' }}
           aria-label="Back"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -143,8 +143,8 @@ export default function GameBoard({
           {room.state === 'describing' && isDescriber && (
             <button
               onClick={onGiveUp}
-              className="text-[10px] font-medium px-2 py-1 rounded"
-              style={{ color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer' }}
+              className="text-[10px] font-medium px-3 py-1.5 rounded"
+              style={{ color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', minHeight: '36px' }}
             >
               Give Up
             </button>
@@ -154,7 +154,7 @@ export default function GameBoard({
             <button
               onClick={onToggleDark}
               className="flex items-center justify-center"
-              style={{ width: '32px', height: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
+              style={{ width: '44px', height: '44px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
             >
               {dark ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -170,7 +170,7 @@ export default function GameBoard({
           <button
             onClick={() => setShowScoreboard(true)}
             className="flex items-center justify-center"
-            style={{ width: '32px', height: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
+            style={{ width: '44px', height: '44px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', borderRadius: '8px' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
@@ -223,16 +223,16 @@ export default function GameBoard({
                   </span>
                   {/* Guesser word blanks hint */}
                   {room.currentWord && !isDescriber && (
-                    <div className="flex gap-px">
+                    <div className="flex gap-0.5 flex-wrap">
                       {room.currentWord.split('').map((char, i) => (
                         <span
                           key={i}
                           className="flex items-center justify-center"
                           style={{
-                            width: '1.1rem',
-                            height: '1.2rem',
-                            borderBottom: /[a-zA-Z0-9]/.test(char) ? '1.5px solid var(--color-text-muted)' : 'none',
-                            fontSize: '0.6rem',
+                            width: '1.4rem',
+                            height: '1.6rem',
+                            borderBottom: /[a-zA-Z0-9]/.test(char) ? '2px solid var(--color-text-muted)' : 'none',
+                            fontSize: '0.75rem',
                             fontWeight: 700,
                             textTransform: 'uppercase',
                             color: 'var(--color-text-muted)',
@@ -258,11 +258,11 @@ export default function GameBoard({
       {/* Reveal bottom bar */}
       {room.state === 'revealing' && (
         <div className="flex justify-center gap-3 px-4 py-2" style={{ background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
-          <button onClick={onLeave} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ color: 'var(--color-wrong)', border: '1px solid rgba(224, 92, 92, 0.3)', background: 'transparent', cursor: 'pointer' }}>
+          <button onClick={onLeave} className="text-xs font-medium px-4 py-2 rounded-lg" style={{ color: 'var(--color-wrong)', border: '1px solid rgba(224, 92, 92, 0.3)', background: 'transparent', cursor: 'pointer', minHeight: '44px' }}>
             Exit Game
           </button>
           {isHost && (
-            <button onClick={onEndGame} className="text-xs px-3 py-1.5 rounded-lg" style={{ color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer' }}>
+            <button onClick={onEndGame} className="text-xs px-4 py-2 rounded-lg" style={{ color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', minHeight: '44px' }}>
               End Game
             </button>
           )}
@@ -285,7 +285,7 @@ export default function GameBoard({
               <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                 Players
               </span>
-              <button onClick={() => setShowScoreboard(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px', lineHeight: 0 }}>
+              <button onClick={() => setShowScoreboard(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '10px', lineHeight: 0, minWidth: '44px', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>

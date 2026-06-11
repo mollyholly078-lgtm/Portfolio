@@ -282,7 +282,7 @@ export default function ActivityFeed({
                     {/* Reply button on hover */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleReply(entry) }}
-                      className="absolute bottom-0 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                      className="absolute bottom-0 opacity-0 group-hover:opacity-100 transition-opacity"
                       style={{
                         background: 'var(--color-surface)',
                         border: '1px solid var(--color-border)',
@@ -291,7 +291,12 @@ export default function ActivityFeed({
                         color: 'var(--color-text-muted)',
                         lineHeight: 0,
                         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        [isOwn ? 'left' : 'right']: '-28px',
+                        [isOwn ? 'left' : 'right']: '-32px',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                       aria-label="Reply"
                     >
@@ -351,7 +356,7 @@ export default function ActivityFeed({
           </div>
           <button
             onClick={() => setReplyTo(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px', lineHeight: 0 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '10px', lineHeight: 0, minWidth: '44px', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -403,11 +408,14 @@ export default function ActivityFeed({
               color: !input.trim() || (roomState === 'choosing' && !isDescriber) ? 'var(--color-text-muted)' : '#fff',
               border: 'none',
               borderRadius: '50%',
-              width: '42px',
-              height: '42px',
+              width: '44px',
+              height: '44px',
               cursor: !input.trim() || (roomState === 'choosing' && !isDescriber) ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s ease',
             }}
+            onPointerDown={(e) => { if (!(e.target as HTMLButtonElement).disabled) (e.target as HTMLButtonElement).style.transform = 'scale(0.92)'; }}
+            onPointerUp={(e) => { (e.target as HTMLButtonElement).style.transform = 'scale(1)'; }}
+            onPointerLeave={(e) => { (e.target as HTMLButtonElement).style.transform = 'scale(1)'; }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="22" y1="2" x2="11" y2="13" />

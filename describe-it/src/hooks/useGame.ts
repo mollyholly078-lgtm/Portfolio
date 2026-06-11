@@ -13,7 +13,6 @@ import { isCorrectGuess } from '../utils/levenshtein'
 
 interface GameOptions {
   totalRounds: number
-  turnDuration: number
   selectedCategories: string[]
 }
 
@@ -41,7 +40,6 @@ interface UseGameReturn {
   isDescriber: boolean
   players: Player[]
   describerId: string | null
-  timeLeft: number
 }
 
 export function useGame(): UseGameReturn {
@@ -90,33 +88,6 @@ export function useGame(): UseGameReturn {
     return () => off(r, 'value', cleanup)
   }, [roomCode, uid])
 
-  // Watch for turn timer expiry
-  useEffect(() => {
-    if (!room || room.state !== 'describing' || !room.turnEndTime) return
-    const remaining = room.turnEndTime - Date.now()
-    if (remaining <= 0) {
-      handleTurnTimeout(roomCode!, room)
-      return
-    }
-    const timeout = setTimeout(() => {
-      if (roomCode) handleTurnTimeout(roomCode, room)
-    }, remaining)
-    return () => clearTimeout(timeout)
-  }, [room?.state, room?.turnEndTime, room?.currentRound, room?.currentDescriberIndex])
-
-  async function handleTurnTimeout(roomCode: string, room: Room) {
-    await update(ref(db), {
-      [`rooms/${roomCode}/state`]: 'revealing',
-      [`rooms/${roomCode}/wordRevealEndTime`]: Date.now() + REVEAL_DURATION * 1000,
-      [`rooms/${roomCode}/wordHistory/round${room.currentRound}`]: {
-        word: room.currentWord,
-        category: room.currentCategory,
-        correctGuesserId: null,
-        correctGuesserName: null,
-      },
-    })
-  }
-
   // Watch for reveal timer expiry
   useEffect(() => {
     if (!room || room.state !== 'revealing' || !room.wordRevealEndTime) return
@@ -157,7 +128,6 @@ export function useGame(): UseGameReturn {
       [`rooms/${roomCode}/descriptions`]: '',
       [`rooms/${roomCode}/guesses`]: {},
       [`rooms/${roomCode}/wordRevealEndTime`]: 0,
-      [`rooms/${roomCode}/turnEndTime`]: 0,
     })
   }
 
@@ -185,7 +155,7 @@ export function useGame(): UseGameReturn {
         players: { [uidVal]: player },
         playerOrder: [uidVal],
         state: 'waiting',
-        settings: { totalRounds: 3, turnDuration: 60, selectedCategories: [...CATEGORIES] },
+        settings: { totalRounds: 3, selectedCategories: [...CATEGORIES] },
         currentRound: 0,
         currentDescriberIndex: 0,
         currentCategory: '',
@@ -193,7 +163,6 @@ export function useGame(): UseGameReturn {
         wordOptions: [],
         descriptions: '',
         wordRevealEndTime: 0,
-        turnEndTime: 0,
         guesses: {},
         chatMessages: {},
         wordHistory: {},
@@ -301,7 +270,6 @@ export function useGame(): UseGameReturn {
       updates[`rooms/${roomCode}/currentRound`] = 1
       updates[`rooms/${roomCode}/currentDescriberIndex`] = 0
       updates[`rooms/${roomCode}/settings/totalRounds`] = options.totalRounds
-      updates[`rooms/${roomCode}/settings/turnDuration`] = options.turnDuration
       updates[`rooms/${roomCode}/settings/selectedCategories`] = options.selectedCategories
       updates[`rooms/${roomCode}/currentCategory`] = ''
       updates[`rooms/${roomCode}/currentWord`] = ''
@@ -326,27 +294,23 @@ export function useGame(): UseGameReturn {
 
   const chooseWord = useCallback(async (word: string) => {
     if (!roomCode || !uid || !room) return
-    const dur = (room.settings?.turnDuration || 60) * 1000
     await update(ref(db), {
       [`rooms/${roomCode}/currentWord`]: word,
       [`rooms/${roomCode}/state`]: 'describing',
       [`rooms/${roomCode}/descriptions`]: '',
       [`rooms/${roomCode}/guesses`]: {},
-      [`rooms/${roomCode}/turnEndTime`]: Date.now() + dur,
     }).catch((err: any) => setError(err.message))
   }, [roomCode, uid, room])
 
   const setCustomWord = useCallback(async (word: string) => {
     if (!roomCode || !uid || !room) return
     try {
-      const dur = (room.settings?.turnDuration || 60) * 1000
       await update(ref(db), {
         [`rooms/${roomCode}/currentWord`]: word,
         [`rooms/${roomCode}/state`]: 'describing',
         [`rooms/${roomCode}/descriptions`]: '',
         [`rooms/${roomCode}/guesses`]: {},
         [`rooms/${roomCode}/wordOptions`]: [word, ...(room.wordOptions?.slice(1) || [])],
-        [`rooms/${roomCode}/turnEndTime`]: Date.now() + dur,
       })
     } catch (err: any) {
       setError(err.message)
@@ -450,7 +414,6 @@ export function useGame(): UseGameReturn {
         [`rooms/${roomCode}/wordOptions`]: [],
         [`rooms/${roomCode}/descriptions`]: '',
         [`rooms/${roomCode}/wordRevealEndTime`]: 0,
-        [`rooms/${roomCode}/turnEndTime`]: 0,
         [`rooms/${roomCode}/guesses`]: {},
         [`rooms/${roomCode}/wordHistory`]: {},
       }
@@ -474,12 +437,10 @@ export function useGame(): UseGameReturn {
   const isHost = uid ? room?.hostId === uid : false
   const describerId = room ? room.playerOrder[room.currentDescriberIndex] : null
   const isDescriber = uid === describerId
-  const timeLeft = room && room.turnEndTime ? Math.max(0, Math.floor((room.turnEndTime - Date.now()) / 1000)) : 0
-
   return {
     room, roomCode, loading, error, playerId, playerName,
     createRoom, joinRoom, leaveRoom, startGame, chooseWord, setCustomWord,
     skipWords, submitDescription, submitGuess, sendChatMessage, playAgain, endGame, giveUpTurn,
-    isHost, isDescriber, players, describerId, timeLeft,
+    isHost, isDescriber, players, describerId,
   }
 }

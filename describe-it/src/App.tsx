@@ -44,8 +44,8 @@ export default function App() {
     setScreen('lobby')
   }, [game])
 
-  const handleStart = useCallback(async (rounds: number, turnDuration: number, categories: string[]) => {
-    await game.startGame({ totalRounds: rounds, turnDuration, selectedCategories: categories })
+  const handleStart = useCallback(async (rounds: number, categories: string[]) => {
+    await game.startGame({ totalRounds: rounds, selectedCategories: categories })
   }, [game])
 
   const handleLeave = useCallback(async () => {

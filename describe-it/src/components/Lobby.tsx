@@ -7,7 +7,7 @@ interface Props {
   players: Player[]
   roomCode: string
   isHost: boolean
-  onStart: (rounds: number, turnDuration: number, categories: string[]) => void
+  onStart: (rounds: number, categories: string[]) => void
   onLeave: () => void
 }
 
@@ -74,7 +74,7 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
               </div>
             </div>
 
-            <button onClick={() => onStart(parseInt(rounds) || 3, 60, selectedCats)}
+            <button onClick={() => onStart(parseInt(rounds) || 3, selectedCats)}
               disabled={selectedCats.length === 0}
               className="w-full py-3 bg-success hover:bg-emerald-600 disabled:opacity-50 rounded-lg font-semibold text-base transition-colors">
               Start Game

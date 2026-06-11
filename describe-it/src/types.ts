@@ -71,7 +71,6 @@ export interface RoundHistory {
 export interface GameSettings {
   totalRounds: number
   selectedCategories: string[]
-  turnDuration: number
 }
 
 export interface Room {
@@ -87,7 +86,6 @@ export interface Room {
   wordOptions: string[]
   descriptions: string
   wordRevealEndTime: number
-  turnEndTime: number
   guesses: Record<string, GuessEntry>
   chatMessages: Record<string, ChatMessage>
   wordHistory: Record<string, RoundHistory>

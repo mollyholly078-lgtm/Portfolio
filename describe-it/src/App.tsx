@@ -139,6 +139,7 @@ export default function App() {
         onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
         onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame} onGiveUp={game.giveUpTurn} onLeave={handleExitGame}
         dark={dark} onToggleDark={toggleDark}
+        playerId={game.playerId}
       />
     )
   }

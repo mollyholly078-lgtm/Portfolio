@@ -12,8 +12,6 @@ interface Props {
 }
 
 export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: Props) {
-  const [rounds, setRounds] = useState<number>(3)
-  const [timer, setTimer] = useState<number>(60)
   const [selectedCats, setSelectedCats] = useState<string[]>(CATEGORIES)
 
   const toggleCat = (cat: string) => {
@@ -52,28 +50,6 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
             <div className="bg-surface rounded-xl p-3">
               <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Game Settings</h3>
 
-              <div className="mb-3">
-                <p className="text-xs text-text-muted mb-1">Number of Rounds</p>
-                <div className="flex gap-2 items-center">
-                  <button onClick={() => setRounds(r => Math.max(1, +r - 1))}
-                    className="w-10 h-10 bg-surface-light hover:bg-primary rounded-lg text-lg font-bold transition-colors">−</button>
-                  <span className="flex-1 text-center text-lg font-bold font-mono">{rounds}</span>
-                  <button onClick={() => setRounds(r => Math.min(50, +r + 1))}
-                    className="w-10 h-10 bg-surface-light hover:bg-primary rounded-lg text-lg font-bold transition-colors">+</button>
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <p className="text-xs text-text-muted mb-1">Timer per Turn (seconds)</p>
-                <div className="flex gap-2 items-center">
-                  <button onClick={() => setTimer(t => Math.max(10, +t - 10))}
-                    className="w-10 h-10 bg-surface-light hover:bg-primary rounded-lg text-lg font-bold transition-colors">−</button>
-                  <span className="flex-1 text-center text-lg font-bold font-mono">{timer}s</span>
-                  <button onClick={() => setTimer(t => Math.min(300, +t + 10))}
-                    className="w-10 h-10 bg-surface-light hover:bg-primary rounded-lg text-lg font-bold transition-colors">+</button>
-                </div>
-              </div>
-
               <div>
                 <p className="text-xs text-text-muted mb-1.5">Categories</p>
                 <div className="flex flex-wrap gap-1">
@@ -90,10 +66,10 @@ export default function Lobby({ players, roomCode, isHost, onStart, onLeave }: P
               </div>
             </div>
 
-            <button onClick={() => onStart(rounds, timer, selectedCats)}
-              disabled={rounds < 1 || timer < 10 || selectedCats.length === 0}
+            <button onClick={() => onStart(3, 60, selectedCats)}
+              disabled={selectedCats.length === 0}
               className="w-full py-3 bg-success hover:bg-emerald-600 disabled:opacity-50 rounded-lg font-semibold text-base transition-colors">
-              Start Game {rounds > 0 ? `(${rounds} rounds)` : ''}
+              Start Game
             </button>
           </div>
         )}

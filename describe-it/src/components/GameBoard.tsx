@@ -13,8 +13,6 @@ interface Props {
   room: Room
   isDescriber: boolean
   isHost: boolean
-  timeLeft: number
-  turnDuration: number
   onChooseWord: (word: string) => Promise<void>
   onSetCustomWord: (word: string) => Promise<void>
   onSkipWords: () => Promise<void>
@@ -22,14 +20,14 @@ interface Props {
   onSubmitGuess: (word: string) => Promise<void>
   onSendChatMessage: (message: string) => Promise<void>
   onEndGame: () => Promise<void>
+  onGiveUp: () => Promise<void>
+  onLeave: () => Promise<void>
 }
 
 export default function GameBoard({
   room,
   isDescriber,
   isHost,
-  timeLeft,
-  turnDuration,
   onChooseWord,
   onSetCustomWord,
   onSkipWords,
@@ -37,6 +35,8 @@ export default function GameBoard({
   onSubmitGuess,
   onSendChatMessage,
   onEndGame,
+  onGiveUp,
+  onLeave,
 }: Props) {
   const [showConfetti, setShowConfetti] = useState(false)
   const prevCorrectGuesses = useRef<Set<string>>(new Set())
@@ -68,47 +68,51 @@ export default function GameBoard({
 
       <ConnectionStatus players={players} />
 
-      {isHost && (
-        <div className="flex justify-end px-4 pt-2">
+      <div className="flex justify-end px-3 pt-1.5 gap-2">
+        {isHost && (
           <button onClick={onEndGame}
-            className="text-xs text-text-muted hover:text-danger transition-colors px-3 py-1.5 rounded-lg border border-border hover:border-danger/50">
+            className="text-xs text-text-muted hover:text-danger transition-colors px-2.5 py-1 rounded-lg border border-border hover:border-danger/50">
             End Game
           </button>
-        </div>
-      )}
+        )}
+        {!isHost && (
+          <button onClick={onLeave}
+            className="text-xs text-text-muted hover:text-danger transition-colors px-2.5 py-1 rounded-lg border border-border hover:border-danger/50">
+            Exit Game
+          </button>
+        )}
+      </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 max-w-7xl mx-auto w-full">
-        <div className="flex-1 flex flex-col gap-3 min-w-0">
+      <div className="flex-1 flex flex-col lg:flex-row gap-2 p-2 max-w-7xl mx-auto w-full">
+        <div className="flex-1 flex flex-col gap-2 min-w-0">
           <Scoreboard
             players={players} describerId={describerId}
             currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
           />
 
-          <div className="bg-surface rounded-xl flex-1 flex flex-col min-h-[350px]">
+          <div className="bg-surface rounded-xl flex-1 flex flex-col min-h-[300px] overflow-hidden">
             {room.state === 'choosing' && isDescriber && (
               <DescriberView
                 word="" wordOptions={room.wordOptions || []} category={room.currentCategory}
-                descriptions="" timeLeft={timeLeft} turnDuration={turnDuration} state="choosing"
+                descriptions="" state="choosing"
                 onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={onSkipWords} onSubmitDescription={async () => {}} guesses={{}}
+                onSkipWords={onSkipWords} onSubmitDescription={async () => {}} onGiveUp={async () => {}} guesses={{}}
               />
             )}
 
             {room.state === 'describing' && isDescriber && (
               <DescriberView
                 word={room.currentWord} wordOptions={room.wordOptions || []} category={room.currentCategory}
-                descriptions={room.descriptions || ''} timeLeft={timeLeft} turnDuration={turnDuration} state="describing"
+                descriptions={room.descriptions || ''} state="describing"
                 onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={async () => {}} onSubmitDescription={onSubmitDescription} guesses={guesses}
+                onSkipWords={async () => {}} onSubmitDescription={onSubmitDescription} onGiveUp={onGiveUp} guesses={guesses}
               />
             )}
 
             {room.state === 'choosing' && !isDescriber && (
               <div className="flex items-center justify-center p-6 animate-fade-in">
-                <p className="text-text-muted text-base">
-                  {room.currentCategory
-                    ? `Describer is choosing a word (${room.currentCategory})...`
-                    : 'Describer is choosing a category...'}
+                <p className="text-text-muted text-sm">
+                  {room.currentCategory ? `Describer is choosing a word...` : 'Describer is choosing...'}
                 </p>
               </div>
             )}
@@ -116,22 +120,22 @@ export default function GameBoard({
             {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
               <GuesserView
                 category={room.currentCategory} currentWord={room.currentWord}
-                descriptions={room.descriptions || ''} timeLeft={timeLeft} turnDuration={turnDuration} state={room.state}
+                descriptions={room.descriptions || ''} state={room.state}
                 onSubmitGuess={onSubmitGuess} guesses={guesses}
               />
             )}
 
             {room.state === 'revealing' && (
-              <WordReveal word={room.currentWord} category={room.currentCategory} history={currentHistory} timeLeft={timeLeft} />
+              <WordReveal word={room.currentWord} category={room.currentCategory} history={currentHistory} />
             )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 lg:w-72">
-          <div className="bg-surface rounded-xl overflow-hidden h-56 lg:h-64 flex flex-col">
+        <div className="flex flex-col gap-2 lg:w-72">
+          <div className="bg-surface rounded-xl overflow-hidden h-48 lg:h-56 flex flex-col">
             <GuessFeed guesses={guesses} />
           </div>
-          <div className="bg-surface rounded-xl overflow-hidden flex-1 lg:flex-none lg:h-56 flex flex-col">
+          <div className="bg-surface rounded-xl overflow-hidden flex-1 lg:flex-none lg:h-48 flex flex-col">
             <ChatPanel messages={room.chatMessages || {}} onSend={onSendChatMessage} />
           </div>
         </div>

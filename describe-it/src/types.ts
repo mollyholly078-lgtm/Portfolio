@@ -70,8 +70,8 @@ export interface RoundHistory {
 
 export interface GameSettings {
   totalRounds: number
-  timerDuration: number
   selectedCategories: string[]
+  turnDuration: number
 }
 
 export interface Room {
@@ -87,7 +87,7 @@ export interface Room {
   wordOptions: string[]
   descriptions: string
   wordRevealEndTime: number
-  turnStartTime: number
+  turnEndTime: number
   guesses: Record<string, GuessEntry>
   chatMessages: Record<string, ChatMessage>
   wordHistory: Record<string, RoundHistory>
@@ -105,7 +105,5 @@ export const PLAYER_COLORS = [
   '#ef4444',
 ]
 
-export const ROUND_OPTIONS = [3, 5, 10] as const
-export const TIMER_OPTIONS = [30, 45, 60, 90, 120] as const
 export const REVEAL_DURATION = 3
 export const ROOM_CODE_LENGTH = 6

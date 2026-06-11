@@ -44,11 +44,16 @@ export default function App() {
     setScreen('lobby')
   }, [game])
 
-  const handleStart = useCallback(async (rounds: number, timer: number, categories: string[]) => {
-    await game.startGame({ totalRounds: rounds, timerDuration: timer, selectedCategories: categories })
+  const handleStart = useCallback(async (rounds: number, turnDuration: number, categories: string[]) => {
+    await game.startGame({ totalRounds: rounds, turnDuration, selectedCategories: categories })
   }, [game])
 
   const handleLeave = useCallback(async () => {
+    await game.leaveRoom()
+    setScreen('home')
+  }, [game])
+
+  const handleExitGame = useCallback(async () => {
     await game.leaveRoom()
     setScreen('home')
   }, [game])
@@ -89,10 +94,10 @@ export default function App() {
   if (screen === 'game' && game.roomCode && game.playerId && roomData) {
     return (
       <GameBoard
-        room={roomData} isDescriber={game.isDescriber} isHost={game.isHost} timeLeft={game.timeLeft} turnDuration={game.turnDuration}
+        room={roomData} isDescriber={game.isDescriber} isHost={game.isHost}
         onChooseWord={game.chooseWord} onSetCustomWord={game.setCustomWord} onSkipWords={game.skipWords}
         onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
-        onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame}
+        onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame} onGiveUp={game.giveUpTurn} onLeave={handleExitGame}
       />
     )
   }

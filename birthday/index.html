@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Catty ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div id="rose-petals"></div>
+  <div id="hearts"></div>
+  <div id="sparkles"></div>
+
+  <div class="envelope-scene" id="envelopeScene">
+    <div class="envelope" id="envelope" onclick="openLetter()">
+      <div class="envelope-flap"></div>
+      <div class="envelope-body">
+        <div class="envelope-heart">❤️</div>
+        <p class="envelope-text">To My Love</p>
+      </div>
+    </div>
+    <p class="click-hint">✨ Click to open ✨</p>
+  </div>
+
+  <div class="letter-container" id="letterContainer">
+    <div class="letter-paper" id="letterPaper">
+      <div class="wax-seal">💌</div>
+
+      <div class="letter-header">
+        <h1 class="birthday-title">Happy Birthday</h1>
+        <h2 class="name-title">Catty</h2>
+        <div class="date-display">June 16</div>
+      </div>
+
+      <div class="letter-body">
+        <p class="salutation">My Dearest Catty,</p>
+
+        <p>
+          On this beautiful day, the world celebrates the arrival of someone truly
+          extraordinary — <strong>you</strong>. Every moment spent with you feels like a
+          page torn from the most beautiful story ever written.
+        </p>
+
+        <p>
+          Your smile lights up even my darkest days, your laughter is the sweetest
+          melody my ears have ever known, and your love has painted my world in
+          colors I never knew existed.
+        </p>
+
+        <p>
+          Like a vintage rose that only grows more beautiful with time, your love
+          has aged into something timeless, something precious, something I will
+          cherish forever.
+        </p>
+
+        <p>
+          Today, I wish you all the happiness in the universe. May your day be
+          filled with as much joy as you've given me. You deserve the world and
+          more, my love.
+        </p>
+
+        <p class="closing">
+          Forever yours,<br>
+          <span class="signature">Abhi</span>
+        </p>
+      </div>
+
+      <div class="letter-footer">
+        <div class="candle-section">
+          <div class="candle">
+            <div class="flame"></div>
+            <div class="candle-body"></div>
+          </div>
+          <p>Make a wish, my love 🕯️</p>
+        </div>
+      </div>
+
+      <button class="btn-surprise" onclick="showSurprise()">🎉 Click for a Surprise!</button>
+
+      <div class="photo-gallery" id="photoGallery">
+        <div class="gallery-title">A little message for you...</div>
+        <div class="message-board">
+          <div class="message-card">You're the most beautiful person I know ❤️</div>
+          <div class="message-card">Every day with you is a blessing ✨</div>
+          <div class="message-card">You make my world complete 🌹</div>
+          <div class="message-card">I love you more than words can say 💕</div>
+          <div class="message-card">Here's to many more birthdays together 🥂</div>
+          <div class="message-card">You're my everything 🌟</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="confetti-container"></div>
+
+  <audio id="bgMusic" loop preload="none">
+    <source src="" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

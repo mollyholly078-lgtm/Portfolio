@@ -260,6 +260,9 @@ export function useGame(): UseGameReturn {
       await update(ref(db), updates)
     } catch (err: any) {
       console.error('Leave room error:', err)
+    } finally {
+      setRoomCode(null)
+      setRoom(null)
     }
   }, [roomCode, uid])
 

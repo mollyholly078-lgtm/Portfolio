@@ -49,17 +49,18 @@ export default function GuesserView({
         <LetterBlanks word={currentWord} />
       </div>
 
-      {descriptions && (
-        <div
-          className="p-6 mb-3"
-          style={{
-            background: 'var(--color-surface)',
-            borderRadius: 'var(--radius-card)',
-            boxShadow: 'var(--shadow-card)',
-            border: '1px solid var(--color-border)',
-            animation: 'slide-in-right 0.25s ease-out',
-          }}
-        >
+      {/* Question Card */}
+      <div
+        className="p-6 mb-3"
+        style={{
+          background: 'var(--color-surface)',
+          borderRadius: 'var(--radius-card)',
+          boxShadow: 'var(--shadow-card)',
+          border: '1px solid var(--color-border)',
+          animation: 'slide-in-right 0.25s ease-out',
+        }}
+      >
+        {descriptions ? (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-muted)' }}>Clues</p>
             {descriptions.split('\n').filter(Boolean).map((line, i) => (
@@ -72,8 +73,12 @@ export default function GuesserView({
               </p>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Describer is picking a word...
+          </p>
+        )}
+      </div>
 
       {/* Guesses List */}
       {guessesList.length > 0 && (

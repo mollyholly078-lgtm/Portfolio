@@ -301,6 +301,7 @@ export default function GameBoard({
                 background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-card)',
                 boxShadow: 'var(--shadow-card)',
+                overflow: 'hidden',
               }}>
               <ActivityFeed
                 guesses={guesses}

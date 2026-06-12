@@ -220,6 +220,7 @@ export default function GameBoard({
               isDescriber={isDescriber}
               roomState={room.state}
               currentWord={room.currentWord}
+              describerName={room.players[describerId]?.name}
             />
           </div>
         </div>

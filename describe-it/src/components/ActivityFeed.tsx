@@ -11,6 +11,7 @@ interface Props {
   isDescriber: boolean
   roomState: string
   currentWord?: string
+  describerName?: string
 }
 
 type ActivityEntry = {
@@ -30,7 +31,7 @@ function containsWord(text: string, target: string): boolean {
 
 export default function ActivityFeed({
   guesses, chatMessages, descriptions, onSubmitGuess, onSendChatMessage,
-  onSubmitDescription, isDescriber, roomState, currentWord,
+  onSubmitDescription, isDescriber, roomState, currentWord, describerName,
 }: Props) {
   const [input, setInput] = useState('')
   const [warning, setWarning] = useState(false)
@@ -48,10 +49,10 @@ export default function ActivityFeed({
 
   const clueEntries: ActivityEntry[] = descriptions
     ? descriptions.split('\n').filter(Boolean).map((line, i) => ({
-        type: 'clue' as const,
+        type: 'chat' as const,
         id: `clue-${i}`,
         playerId: 'describer',
-        playerName: 'Clue',
+        playerName: describerName || 'Clue',
         timestamp: Date.now() + i,
         text: line,
       }))

@@ -127,8 +127,6 @@ export function useGame(): UseGameReturn {
       [`rooms/${roomCode}/currentCategory`]: category,
       [`rooms/${roomCode}/currentWord`]: '',
       [`rooms/${roomCode}/wordOptions`]: words,
-      [`rooms/${roomCode}/descriptions`]: '',
-      [`rooms/${roomCode}/guesses`]: {},
       [`rooms/${roomCode}/wordRevealEndTime`]: 0,
     })
   }
@@ -302,8 +300,6 @@ export function useGame(): UseGameReturn {
     await update(ref(db), {
       [`rooms/${roomCode}/currentWord`]: word,
       [`rooms/${roomCode}/state`]: 'describing',
-      [`rooms/${roomCode}/descriptions`]: '',
-      [`rooms/${roomCode}/guesses`]: {},
     }).catch((err: any) => setError(err.message))
   }, [roomCode, uid, room])
 
@@ -313,8 +309,6 @@ export function useGame(): UseGameReturn {
       await update(ref(db), {
         [`rooms/${roomCode}/currentWord`]: word,
         [`rooms/${roomCode}/state`]: 'describing',
-        [`rooms/${roomCode}/descriptions`]: '',
-        [`rooms/${roomCode}/guesses`]: {},
         [`rooms/${roomCode}/wordOptions`]: [word, ...(room.wordOptions?.slice(1) || [])],
       })
     } catch (err: any) {

@@ -56,8 +56,8 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  overflow-y: auto;
-  height: auto;
+  overflow: hidden;
+  height: 100%;
 }
 
 body {
@@ -68,12 +68,15 @@ body {
   line-height: 1.6;
   background: var(--color-bg);
   color: var(--color-text);
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* body block moved up to merge with the one above */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Fraunces', Georgia, serif;
@@ -156,6 +159,24 @@ input, textarea, select {
   100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
 }
 
+/* Activity feed scrollbar */
+.scrollable-list::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollable-list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+  background-clip: content-box;
+}
+
 /* Utility classes */
 @utility animate-fade-in {
   animation: fade-in 0.4s ease-out;
@@ -198,28 +219,6 @@ input, textarea, select {
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
-}
-
-/* Visible scrollbar for ActivityFeed */
-.activity-scroll {
-  overflow-y: scroll !important;
-  -webkit-overflow-scrolling: touch;
-}
-.activity-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-.activity-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.activity-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-.activity-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
-  background-clip: content-box;
 }
 
 /* Page entrance */

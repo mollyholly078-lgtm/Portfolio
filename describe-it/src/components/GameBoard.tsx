@@ -69,7 +69,7 @@ export default function GameBoard({
   const currentHistory = room.wordHistory?.[historyKey] || null
 
   return (
-    <div className="min-h-dvh flex flex-col" style={{ background: 'var(--color-bg)' }}>
+    <div className="h-dvh flex flex-col overflow-hidden" style={{ background: 'var(--color-bg)' }}>
       {showConfetti && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
           <Confetti particleCount={100} width={400} />
@@ -246,7 +246,7 @@ export default function GameBoard({
 
         <div className="flex flex-col lg:flex-row gap-2 max-w-7xl mx-auto flex-1 min-h-0">
 
-          <div className="lg:flex-1 lg:min-w-0">
+          <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-visible">
             <div
               style={{
                 background: 'var(--color-surface)',
@@ -301,7 +301,6 @@ export default function GameBoard({
                 background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-card)',
                 boxShadow: 'var(--shadow-card)',
-                overflow: 'hidden',
               }}>
               <ActivityFeed
                 guesses={guesses}

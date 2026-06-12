@@ -134,7 +134,7 @@ export default function App() {
   if (screen === 'game' && game.roomCode && game.playerId && roomData) {
     return (
       <GameBoard
-        room={roomData} isDescriber={game.isDescriber} isHost={game.isHost}
+        room={roomData} roomCode={game.roomCode} isDescriber={game.isDescriber} isHost={game.isHost}
         onChooseWord={game.chooseWord} onSetCustomWord={game.setCustomWord} onSkipWords={game.skipWords}
         onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
         onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame} onGiveUp={game.giveUpTurn} onLeave={handleExitGame}

@@ -10,6 +10,7 @@ import Confetti from 'react-confetti-explosion'
 
 interface Props {
   room: Room
+  roomCode: string
   isDescriber: boolean
   isHost: boolean
   onChooseWord: (word: string) => Promise<void>
@@ -27,6 +28,7 @@ interface Props {
 
 export default function GameBoard({
   room,
+  roomCode,
   isDescriber,
   isHost,
   onChooseWord,
@@ -109,6 +111,9 @@ export default function GameBoard({
             }}
           >
             Catkey
+          </span>
+          <span className="text-xs font-mono" style={{ color: 'var(--color-text-muted)' }}>
+            #{roomCode}
           </span>
         </div>
 

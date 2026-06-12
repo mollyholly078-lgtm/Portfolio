@@ -104,4 +104,4 @@ export const PLAYER_COLORS = [
 ]
 
 export const REVEAL_DURATION = 3
-export const ROOM_CODE_LENGTH = 6
+export const   ROOM_CODE_LENGTH = 4

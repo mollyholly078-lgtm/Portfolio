@@ -173,7 +173,7 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, d
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="e.g. XK92PL"
+                placeholder="e.g. XK92"
                 className="w-full font-mono tracking-widest text-center text-lg uppercase"
                 style={{
                   background: 'var(--color-surface)',
@@ -194,18 +194,18 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, d
                   e.target.style.borderColor = 'var(--color-border)';
                   e.target.style.boxShadow = 'none';
                 }}
-                maxLength={6}
+                maxLength={4}
                 required
                 autoFocus
               />
             </div>
             <button
               type="submit"
-              disabled={loading || !name.trim() || code.length !== 6}
+              disabled={loading || !name.trim() || code.length !== 4}
               className="w-full font-bold"
               style={{
                 background: 'var(--color-primary)',
-                opacity: loading || !name.trim() || code.length !== 6 ? 0.5 : 1,
+                opacity: loading || !name.trim() || code.length !== 4 ? 0.5 : 1,
                 color: '#fff',
                 borderRadius: 'var(--radius-btn)',
                 padding: '14px 32px',
@@ -213,11 +213,11 @@ export default function HomeScreen({ onCreateRoom, onJoinRoom, loading, error, d
                 fontWeight: 700,
                 letterSpacing: '0.5px',
                 border: 'none',
-                cursor: loading || !name.trim() || code.length !== 6 ? 'not-allowed' : 'pointer',
+                cursor: loading || !name.trim() || code.length !== 4 ? 'not-allowed' : 'pointer',
                 transition: 'transform 0.08s ease',
               }}
               onMouseDown={(e) => {
-                if (!loading && name.trim() && code.length === 6) (e.target as HTMLButtonElement).style.transform = 'scale(0.96)';
+                if (!loading && name.trim() && code.length === 4) (e.target as HTMLButtonElement).style.transform = 'scale(0.96)';
               }}
               onMouseUp={(e) => {
                 (e.target as HTMLButtonElement).style.transform = 'scale(1)';

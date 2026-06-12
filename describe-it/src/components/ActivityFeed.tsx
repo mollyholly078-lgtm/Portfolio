@@ -36,6 +36,7 @@ export default function ActivityFeed({
   const [input, setInput] = useState('')
   const [warning, setWarning] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const clueTimestamps = useRef<Map<string, number>>(new Map())
 
   const guessEntries: ActivityEntry[] = Object.values(guesses).map((g) => ({
     type: 'guess' as const, id: g.id, playerId: g.playerId, playerName: g.playerName,
@@ -48,14 +49,20 @@ export default function ActivityFeed({
   }))
 
   const clueEntries: ActivityEntry[] = descriptions
-    ? descriptions.split('\n').filter(Boolean).map((line, i) => ({
-        type: 'chat' as const,
-        id: `clue-${i}`,
-        playerId: 'describer',
-        playerName: describerName || 'Clue',
-        timestamp: Date.now() + i,
-        text: line,
-      }))
+    ? descriptions.split('\n').filter(Boolean).map((line, i) => {
+        const key = `${i}:${line}`
+        if (!clueTimestamps.current.has(key)) {
+          clueTimestamps.current.set(key, Date.now() + i)
+        }
+        return {
+          type: 'chat' as const,
+          id: `clue-${i}`,
+          playerId: 'describer',
+          playerName: describerName || 'Clue',
+          timestamp: clueTimestamps.current.get(key)!,
+          text: line,
+        }
+      })
     : []
 
   const entries = [...clueEntries, ...guessEntries, ...chatEntries].sort((a, b) => a.timestamp - b.timestamp)

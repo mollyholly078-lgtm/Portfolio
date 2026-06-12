@@ -244,9 +244,9 @@ export default function GameBoard({
         </div>
       )}
 
-      <div className="p-2">
+      <div className="flex-1 flex flex-col min-h-0 p-2">
 
-        <div className="flex flex-col lg:flex-row gap-2 max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-2 max-w-7xl mx-auto flex-1 min-h-0">
 
           <div className="lg:flex-1 lg:min-w-0">
             <div
@@ -298,8 +298,9 @@ export default function GameBoard({
             </div>
           </div>
 
-          <div className="lg:w-80 lg:shrink-0">
+          <div className="flex flex-col flex-1 min-h-0 lg:w-80 lg:flex-none">
             <div
+              className="flex-1 flex flex-col min-h-0"
               style={{
                 background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-card)',

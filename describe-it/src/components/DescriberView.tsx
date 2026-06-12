@@ -74,17 +74,22 @@ export default function DescriberView({
           {CATEGORY_EMOJIS[category as Category] || ''} {category}
         </p>
 
-        <div className="space-y-1.5 w-full max-w-sm mx-auto mb-3">
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
           {wordOptions.map((w, i) => (
             <button key={i} onClick={() => onChooseWord(w)}
-              className="w-full py-3 px-3 font-semibold transition-all text-sm"
+              className="font-semibold transition-all text-xs text-center"
               style={{
+                flex: '1 0 calc(33.33% - 8px)',
+                maxWidth: '160px',
+                minWidth: '80px',
                 background: 'var(--color-surface-alt)',
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-btn)',
-                minHeight: '48px',
+                padding: '10px 6px',
+                minHeight: '44px',
                 cursor: 'pointer',
                 color: 'var(--color-text)',
+                wordBreak: 'break-word',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = 'rgba(91, 79, 207, 0.08)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.background = 'var(--color-surface-alt)'; }}

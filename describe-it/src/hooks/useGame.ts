@@ -56,7 +56,7 @@ export function useGame(): UseGameReturn {
   const currentUid = useRef<string | null>(null)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('catkey_uid')
+    const stored = localStorage.getItem('catkey_uid')
     if (stored) {
       currentUid.current = stored
       setUid(stored)
@@ -138,7 +138,7 @@ export function useGame(): UseGameReturn {
       const uidVal = currentUid.current || crypto.randomUUID()
       if (!currentUid.current) {
         currentUid.current = uidVal
-        sessionStorage.setItem('catkey_uid', uidVal)
+        localStorage.setItem('catkey_uid', uidVal)
         setUid(uidVal)
         setPlayerId(uidVal)
       }
@@ -187,19 +187,43 @@ export function useGame(): UseGameReturn {
       const snapshot = await get(child(ref(db), `rooms/${codeUpper}`))
       if (!snapshot.exists()) throw new Error('Room not found')
       const roomData = snapshot.val() as Room
-      const playerCount = Object.keys(roomData.players || {}).length
-      if (playerCount >= 4) throw new Error('Room is full (max 4 players)')
-      if (roomData.state !== 'waiting') throw new Error('Game already in progress')
 
       const uidVal = currentUid.current || crypto.randomUUID()
+      const isReturningPlayer = !!currentUid.current
+
       if (!currentUid.current) {
         currentUid.current = uidVal
-        sessionStorage.setItem('catkey_uid', uidVal)
+        localStorage.setItem('catkey_uid', uidVal)
         setUid(uidVal)
         setPlayerId(uidVal)
       }
       setPlayerName(name)
       setRoomCode(codeUpper)
+
+      // Returning player - reconnect or re-add to room regardless of game state
+      if (isReturningPlayer) {
+        if (roomData.players?.[uidVal]) {
+          await update(ref(db), {
+            [`rooms/${codeUpper}/players/${uidVal}/connected`]: true,
+            [`rooms/${codeUpper}/players/${uidVal}/name`]: name,
+          })
+        } else {
+          const playerCount = Object.keys(roomData.players || {}).length
+          if (playerCount >= 4) throw new Error('Room is full (max 4 players)')
+          const usedColors = Object.values(roomData.players || {}).map(p => p.color)
+          const availableColor = PLAYER_COLORS.find(c => !usedColors.includes(c)) || PLAYER_COLORS[playerCount % PLAYER_COLORS.length]
+          await update(ref(db), {
+            [`rooms/${codeUpper}/players/${uidVal}`]: { id: uidVal, name, color: availableColor, score: 0, isHost: false, connected: true },
+            [`rooms/${codeUpper}/playerOrder/${playerCount}`]: uidVal,
+          })
+        }
+        return
+      }
+
+      // New player - only allowed for waiting rooms
+      const playerCount = Object.keys(roomData.players || {}).length
+      if (playerCount >= 4) throw new Error('Room is full (max 4 players)')
+      if (roomData.state !== 'waiting') throw new Error('Game already in progress')
 
       const usedColors = Object.values(roomData.players || {}).map(p => p.color)
       const availableColor = PLAYER_COLORS.find(c => !usedColors.includes(c)) || PLAYER_COLORS[playerCount % PLAYER_COLORS.length]

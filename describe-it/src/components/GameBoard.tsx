@@ -45,6 +45,7 @@ export default function GameBoard({
 }: Props) {
   const [showConfetti, setShowConfetti] = useState(false)
   const [successBanner, setSuccessBanner] = useState<string | null>(null)
+  const [showScoreboard, setShowScoreboard] = useState(false)
   const prevCorrectGuesses = useRef<Set<string>>(new Set())
 
   const guesses = room.guesses || {}
@@ -70,7 +71,7 @@ export default function GameBoard({
   const currentHistory = room.wordHistory?.[historyKey] || null
 
   return (
-    <div className="h-dvh flex flex-col overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: 'var(--color-bg)' }}>
       {showConfetti && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
           <Confetti particleCount={100} width={400} />
@@ -102,6 +103,22 @@ export default function GameBoard({
         }}
       >
         <div className="flex items-center gap-2">
+          <button onClick={() => setShowScoreboard(true)}
+            aria-label="Show scoreboard"
+            className="flex items-center justify-center transition-colors rounded-lg lg:hidden"
+            style={{
+              width: '36px',
+              height: '36px',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              minHeight: '36px',
+            }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <span
             className="font-semibold"
             style={{
@@ -157,102 +174,153 @@ export default function GameBoard({
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row gap-2 p-2 max-w-7xl mx-auto w-full overflow-hidden" style={{ animation: 'fade-in 0.4s ease-out' }}>
-        <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-hidden">
-          <Scoreboard
-            players={players} describerId={describerId}
-            currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
-          />
-
-          <div
-            className="flex-1 flex flex-col overflow-hidden"
+      {/* Scoreboard overlay */}
+      {showScoreboard && (
+        <div className="fixed inset-0 z-50" style={{ animation: 'fade-in 0.2s ease-out' }}>
+          <div onClick={() => setShowScoreboard(false)}
             style={{
-              background: 'var(--color-surface)',
-              borderRadius: 'var(--radius-card)',
-              boxShadow: 'var(--shadow-card)',
-              minHeight: '300px',
+              position: 'fixed', inset: 0,
+              background: 'rgba(0,0,0,0.5)',
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed', top: 0, left: 0, bottom: 0, width: '300px', maxWidth: '85vw',
+              background: 'var(--color-bg)',
+              boxShadow: '4px 0 24px rgba(0,0,0,0.15)',
+              zIndex: 51,
+              overflowY: 'auto',
+              animation: 'slide-in-left 0.25s ease-out',
             }}
           >
-            {room.state === 'choosing' && isDescriber && (
-              <DescriberView
-                word="" wordOptions={room.wordOptions || []} category={room.currentCategory}
-                state="choosing"
-                onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={onSkipWords} onGiveUp={async () => {}}
+            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Scoreboard</span>
+              <button onClick={() => setShowScoreboard(false)}
+                className="flex items-center justify-center rounded-full transition-colors"
+                style={{
+                  width: '32px', height: '32px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-muted)',
+                  minHeight: '32px',
+                }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="p-3">
+              <Scoreboard
+                players={players} describerId={describerId}
+                currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
               />
-            )}
-
-            {room.state === 'describing' && isDescriber && (
-              <DescriberView
-                word={room.currentWord} wordOptions={room.wordOptions || []} category={room.currentCategory}
-                state="describing"
-                onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
-                onSkipWords={async () => {}} onGiveUp={onGiveUp}
-              />
-            )}
-
-            {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
-              <GuesserView
-                category={room.currentCategory} currentWord={room.currentWord}
-                state={room.state}
-                onSubmitGuess={onSubmitGuess} guesses={guesses}
-              />
-            )}
-
-            {room.state === 'revealing' && (
-              <WordReveal word={room.currentWord} category={room.currentCategory} history={currentHistory} />
-            )}
+            </div>
           </div>
         </div>
+      )}
 
-        <div className="flex flex-col gap-2 lg:w-80 max-h-[40dvh] lg:max-h-none shrink-0 min-h-0">
-          <div
-            className="flex-1 flex flex-col min-h-0"
-            style={{
-              background: 'var(--color-surface)',
-              borderRadius: 'var(--radius-card)',
-              boxShadow: 'var(--shadow-card)',
-              minHeight: '200px',
-            }}>
-            <ActivityFeed
-              guesses={guesses}
-              chatMessages={room.chatMessages || {}}
-              descriptions={room.descriptions}
-              onSubmitGuess={onSubmitGuess}
-              onSendChatMessage={onSendChatMessage}
-              onSubmitDescription={onSubmitDescription}
-              isDescriber={isDescriber}
-              roomState={room.state}
-              currentWord={room.currentWord}
-              describerName={room.players[describerId]?.name}
-            />
+      <div className="p-2">
+
+        <div className="flex flex-col lg:flex-row gap-2 max-w-7xl mx-auto">
+
+          <div className="lg:flex-1 lg:min-w-0">
+            <div
+              style={{
+                background: 'var(--color-surface)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
+              }}
+            >
+              {room.state === 'choosing' && isDescriber && (
+                <DescriberView
+                  word="" wordOptions={room.wordOptions || []} category={room.currentCategory}
+                  state="choosing"
+                  onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
+                  onSkipWords={onSkipWords} onGiveUp={async () => {}}
+                />
+              )}
+
+              {room.state === 'describing' && isDescriber && (
+                <DescriberView
+                  word={room.currentWord} wordOptions={room.wordOptions || []} category={room.currentCategory}
+                  state="describing"
+                  onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
+                  onSkipWords={async () => {}} onGiveUp={onGiveUp}
+                  onSubmitDescription={onSubmitDescription}
+                  descriptions={room.descriptions}
+                />
+              )}
+
+              {(room.state === 'describing' || room.state === 'choosing') && !isDescriber && (
+                <GuesserView
+                  category={room.currentCategory} currentWord={room.currentWord}
+                  state={room.state}
+                  onSubmitGuess={onSubmitGuess} guesses={guesses}
+                />
+              )}
+
+              {room.state === 'revealing' && (
+                <WordReveal word={room.currentWord} category={room.currentCategory} history={currentHistory} />
+              )}
+
+              {!['choosing', 'describing', 'revealing'].includes(room.state) && (
+                <div className="flex flex-col items-center justify-center p-8 text-center">
+                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                    Waiting for game to start...
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex justify-between items-center px-4 pb-3 pt-1" style={{ borderTop: '1px solid var(--color-border)' }}>
-        <button onClick={onLeave}
-          className="text-xs font-medium transition-colors px-3 py-1.5 rounded-lg"
-          style={{
-            color: 'var(--color-wrong)',
-            border: '1px solid rgba(224, 92, 92, 0.3)',
-            background: 'transparent',
-            minHeight: '36px',
-          }}>
-          Exit Game
-        </button>
-        {isHost && (
-          <button onClick={onEndGame}
-            className="text-xs transition-colors px-2.5 py-1 rounded-lg"
+          <div className="lg:w-80 lg:shrink-0">
+            <div
+              style={{
+                background: 'var(--color-surface)',
+                borderRadius: 'var(--radius-card)',
+                boxShadow: 'var(--shadow-card)',
+              }}>
+              <ActivityFeed
+                guesses={guesses}
+                chatMessages={room.chatMessages || {}}
+                descriptions={room.descriptions}
+                onSubmitGuess={onSubmitGuess}
+                onSendChatMessage={onSendChatMessage}
+                isDescriber={isDescriber}
+                roomState={room.state}
+                currentWord={room.currentWord}
+                describerName={room.players[describerId]?.name}
+              />
+            </div>
+          </div>
+
+        </div>
+
+        <div className="flex justify-between items-center px-1 pt-3 pb-1" style={{ borderTop: '1px solid var(--color-border)', marginTop: '12px' }}>
+          <button onClick={onLeave}
+            className="text-xs font-medium transition-colors px-3 py-1.5 rounded-lg"
             style={{
-              color: 'var(--color-text-muted)',
-              border: '1px solid var(--color-border)',
+              color: 'var(--color-wrong)',
+              border: '1px solid rgba(224, 92, 92, 0.3)',
               background: 'transparent',
               minHeight: '36px',
             }}>
-            End Game
+            Exit Game
           </button>
-        )}
+          {isHost && (
+            <button onClick={onEndGame}
+              className="text-xs transition-colors px-2.5 py-1 rounded-lg"
+              style={{
+                color: 'var(--color-text-muted)',
+                border: '1px solid var(--color-border)',
+                background: 'transparent',
+                minHeight: '36px',
+              }}>
+              End Game
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

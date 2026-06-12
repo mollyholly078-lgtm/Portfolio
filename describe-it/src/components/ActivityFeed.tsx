@@ -7,7 +7,6 @@ interface Props {
   descriptions?: string
   onSubmitGuess: (word: string) => Promise<void>
   onSendChatMessage: (message: string) => Promise<void>
-  onSubmitDescription?: (text: string) => Promise<void>
   isDescriber: boolean
   roomState: string
   currentWord?: string
@@ -24,14 +23,9 @@ type ActivityEntry = {
   correct?: boolean
 }
 
-function containsWord(text: string, target: string): boolean {
-  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return new RegExp(`\\b${escaped}\\b`, 'i').test(text)
-}
-
 export default function ActivityFeed({
   guesses, chatMessages, descriptions, onSubmitGuess, onSendChatMessage,
-  onSubmitDescription, isDescriber, roomState, currentWord, describerName,
+  isDescriber, roomState, currentWord, describerName,
 }: Props) {
   const [input, setInput] = useState('')
   const [warning, setWarning] = useState(false)
@@ -55,7 +49,7 @@ export default function ActivityFeed({
           clueTimestamps.current.set(key, Date.now() + i)
         }
         return {
-          type: 'chat' as const,
+          type: 'clue' as const,
           id: `clue-${i}`,
           playerId: 'describer',
           playerName: describerName || 'Clue',
@@ -76,15 +70,7 @@ export default function ActivityFeed({
     const val = input.trim()
     if (!val) return
 
-    if (isDescriber && roomState === 'describing' && currentWord) {
-      if (containsWord(val, currentWord)) {
-        setWarning(true)
-        return
-      }
-      setWarning(false)
-      setInput('')
-      onSubmitDescription?.(val)
-    } else if (!isDescriber && roomState === 'describing' && currentWord && val.toLowerCase() === currentWord.toLowerCase()) {
+    if (!isDescriber && roomState === 'describing' && currentWord && val.toLowerCase() === currentWord.toLowerCase()) {
       setInput('')
       onSubmitGuess(val)
     } else {
@@ -94,11 +80,11 @@ export default function ActivityFeed({
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="text-xs font-bold uppercase tracking-wider px-3 py-2 shrink-0" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+    <div className="flex flex-col">
+      <div className="text-xs font-bold uppercase tracking-wider px-3 py-2" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
         Activity
       </div>
-      <div className="flex-1 activity-scroll p-3 space-y-1.5 min-h-0">
+      <div className="max-h-64 overflow-y-auto activity-scroll p-3 space-y-1.5">
         {entries.length === 0 && (
           <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-muted)' }}>No activity yet</p>
         )}
@@ -143,16 +129,14 @@ export default function ActivityFeed({
         ))}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={handleSubmit} className="p-2 shrink-0" style={{ borderTop: '1px solid var(--color-border)' }}>
+      <form onSubmit={handleSubmit} className="p-2" style={{ borderTop: '1px solid var(--color-border)' }}>
         <div className="flex gap-2">
           <input
             type="text"
             value={input}
             onChange={(e) => { setInput(e.target.value); setWarning(false) }}
             placeholder={
-              isDescriber && roomState === 'describing'
-                ? 'Type a clue...'
-                : !isDescriber && roomState === 'describing'
+              !isDescriber && roomState === 'describing'
                 ? 'Type the word to guess, or type a message...'
                 : 'Type a message...'
             }

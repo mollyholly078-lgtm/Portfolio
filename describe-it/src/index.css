@@ -56,6 +56,8 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  overflow-y: auto;
+  height: auto;
 }
 
 body {
@@ -67,7 +69,6 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   min-height: 100dvh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-top: env(safe-area-inset-top);
@@ -80,9 +81,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-#root {
-  min-height: 100dvh;
-}
+
 
 * {
   box-sizing: border-box;
@@ -121,6 +120,11 @@ input, textarea, select {
 @keyframes slide-in-right {
   from { opacity: 0; transform: translateX(30px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes shake {
@@ -225,13 +229,12 @@ input, textarea, select {
 
 /* Letter blanks for word display */
 .letter-blank {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2.5rem;
   border-bottom: 3px solid var(--color-text);
-  margin: 0 0.25rem;
-  text-align: center;
-  line-height: 2.5rem;
   font-size: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;

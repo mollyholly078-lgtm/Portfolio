@@ -136,7 +136,7 @@ export default function App() {
       <GameBoard
         room={roomData} roomCode={game.roomCode} isDescriber={game.isDescriber} isHost={game.isHost}
         onChooseWord={game.chooseWord} onSetCustomWord={game.setCustomWord} onSkipWords={game.skipWords}
-        onSubmitDescription={game.submitDescription} onSubmitGuess={game.submitGuess}
+        onSubmitGuess={game.submitGuess}
         onSendChatMessage={game.sendChatMessage} onEndGame={game.endGame} onGiveUp={game.giveUpTurn} onLeave={handleExitGame}
         dark={dark} onToggleDark={toggleDark}
       />

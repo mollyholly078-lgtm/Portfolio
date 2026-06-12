@@ -16,7 +16,6 @@ interface Props {
   onChooseWord: (word: string) => Promise<void>
   onSetCustomWord: (word: string) => Promise<void>
   onSkipWords: () => Promise<void>
-  onSubmitDescription: (text: string) => Promise<void>
   onSubmitGuess: (word: string) => Promise<void>
   onSendChatMessage: (message: string) => Promise<void>
   onEndGame: () => Promise<void>
@@ -34,7 +33,6 @@ export default function GameBoard({
   onChooseWord,
   onSetCustomWord,
   onSkipWords,
-  onSubmitDescription,
   onSubmitGuess,
   onSendChatMessage,
   onEndGame,
@@ -271,8 +269,6 @@ export default function GameBoard({
                   state="describing"
                   onChooseWord={onChooseWord} onSetCustomWord={onSetCustomWord}
                   onSkipWords={async () => {}} onGiveUp={onGiveUp}
-                  onSubmitDescription={onSubmitDescription}
-                  descriptions={room.descriptions}
                 />
               )}
 

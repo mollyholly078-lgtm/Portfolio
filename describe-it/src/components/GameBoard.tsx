@@ -215,6 +215,30 @@ export default function GameBoard({
                 players={players} describerId={describerId}
                 currentRound={room.currentRound} totalRounds={room.settings.totalRounds}
               />
+              <div className="flex flex-col gap-2 mt-4" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '12px' }}>
+                <button onClick={() => { setShowScoreboard(false); onLeave() }}
+                  className="text-sm font-medium transition-colors px-3 py-2 rounded-lg w-full"
+                  style={{
+                    color: 'var(--color-wrong)',
+                    border: '1px solid rgba(224, 92, 92, 0.3)',
+                    background: 'transparent',
+                    minHeight: '44px',
+                  }}>
+                  Exit Game
+                </button>
+                {isHost && (
+                  <button onClick={() => { setShowScoreboard(false); onEndGame() }}
+                    className="text-sm transition-colors px-3 py-2 rounded-lg w-full"
+                    style={{
+                      color: 'var(--color-text-muted)',
+                      border: '1px solid var(--color-border)',
+                      background: 'transparent',
+                      minHeight: '44px',
+                    }}>
+                    End Game
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -297,30 +321,6 @@ export default function GameBoard({
 
         </div>
 
-        <div className="flex justify-between items-center px-1 pt-3 pb-1" style={{ borderTop: '1px solid var(--color-border)', marginTop: '12px' }}>
-          <button onClick={onLeave}
-            className="text-xs font-medium transition-colors px-3 py-1.5 rounded-lg"
-            style={{
-              color: 'var(--color-wrong)',
-              border: '1px solid rgba(224, 92, 92, 0.3)',
-              background: 'transparent',
-              minHeight: '36px',
-            }}>
-            Exit Game
-          </button>
-          {isHost && (
-            <button onClick={onEndGame}
-              className="text-xs transition-colors px-2.5 py-1 rounded-lg"
-              style={{
-                color: 'var(--color-text-muted)',
-                border: '1px solid var(--color-border)',
-                background: 'transparent',
-                minHeight: '36px',
-              }}>
-              End Game
-            </button>
-          )}
-        </div>
       </div>
     </div>
   )

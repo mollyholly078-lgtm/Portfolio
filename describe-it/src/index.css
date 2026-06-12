@@ -202,7 +202,7 @@ input, textarea, select {
 
 /* Visible scrollbar for ActivityFeed */
 .activity-scroll {
-  overflow-y: auto;
+  overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch;
 }
 .activity-scroll::-webkit-scrollbar {

@@ -9,7 +9,7 @@ interface Props {
 
 export default function WordReveal({ word, category, history }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center p-6" style={{ animation: 'scale-in 0.3s ease-out' }}>
+    <div className="flex flex-col items-center justify-center px-2 py-6" style={{ animation: 'scale-in 0.3s ease-out' }}>
       <div
         className="p-6 text-center max-w-sm w-full"
         style={{

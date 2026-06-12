@@ -285,7 +285,7 @@ export default function GameBoard({
               )}
 
               {!['choosing', 'describing', 'revealing'].includes(room.state) && (
-                <div className="flex flex-col items-center justify-center p-8 text-center">
+                <div className="flex flex-col items-center justify-center px-2 py-6 text-center">
                   <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
                     Waiting for game to start...
                   </p>

@@ -28,7 +28,7 @@ export default function GuesserView({
   const isRevealing = state === 'revealing'
 
   return (
-    <div className="flex flex-col p-4" style={{ animation: 'fade-in 0.4s ease-out' }} key={questionKey}>
+    <div className="flex flex-col px-2 py-4" style={{ animation: 'fade-in 0.4s ease-out' }} key={questionKey}>
       <div
         className="rounded-full px-3 py-1 mb-3 text-xs font-semibold self-center"
         style={{

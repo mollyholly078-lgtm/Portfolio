@@ -47,7 +47,7 @@ export default function DescriberView({
 
   if (state === 'choosing') {
     return (
-      <div className="flex flex-col p-4" style={{ animation: 'fade-in 0.4s ease-out' }}>
+      <div className="flex flex-col px-2 py-4" style={{ animation: 'fade-in 0.4s ease-out' }}>
         <div
           className="rounded-full px-3 py-1 mb-2 text-xs font-semibold self-center"
           style={{
@@ -130,7 +130,7 @@ export default function DescriberView({
   }
 
   return (
-    <div className="flex flex-col p-4" style={{ animation: 'fade-in 0.4s ease-out' }}>
+    <div className="flex flex-col px-2 py-4" style={{ animation: 'fade-in 0.4s ease-out' }}>
       <div
         className="rounded-full px-3 py-1 mb-2 text-xs font-semibold self-center"
         style={{

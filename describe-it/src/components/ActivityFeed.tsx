@@ -81,10 +81,10 @@ export default function ActivityFeed({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 activity-feed">
-      <div className="text-xs font-bold uppercase tracking-wider px-3 py-2 shrink-0" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+      <div className="text-xs font-bold uppercase tracking-wider px-2 py-2 shrink-0" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
         Activity
       </div>
-      <div className="flex-1 min-h-0 p-3 space-y-1.5 scrollable-list"
+      <div className="flex-1 min-h-0 px-2 py-3 space-y-1.5 scrollable-list"
         style={{ overflowY: 'scroll', scrollbarWidth: 'auto' }}>
         {entries.length === 0 && (
           <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-muted)' }}>No activity yet</p>

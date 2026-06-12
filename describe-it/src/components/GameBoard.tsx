@@ -68,7 +68,7 @@ export default function GameBoard({
   const currentHistory = room.wordHistory?.[historyKey] || null
 
   return (
-    <div className="min-h-[100dvh] flex flex-col" style={{ background: 'var(--color-bg)' }}>
+    <div className="h-dvh flex flex-col overflow-hidden" style={{ background: 'var(--color-bg)' }}>
       {showConfetti && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
           <Confetti particleCount={100} width={400} />

@@ -200,15 +200,14 @@ export default function GameBoard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 lg:w-80">
+        <div className="flex flex-col gap-2 lg:w-80 lg:flex-initial flex-1 min-h-0">
           <div
-            className="overflow-hidden flex-1 flex flex-col"
+            className="flex-1 flex flex-col min-h-0"
             style={{
               background: 'var(--color-surface)',
               borderRadius: 'var(--radius-card)',
               boxShadow: 'var(--shadow-card)',
-              minHeight: '300px',
-              maxHeight: '500px',
+              minHeight: '200px',
             }}>
             <ActivityFeed
               guesses={guesses}
